@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In — MEDIGRID</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="text-[#EAF2F5] font-body min-h-screen flex flex-col">
+
+  <div
+    class="bg-[#131920] text-[#78909C] border-b border-[#1B2936] font-mono text-[11px] tracking-widest px-6 py-2 flex justify-between items-center">
+    <span>MEDIGRID SYS // v1.0</span>
+    <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse"></span>
+      NETWORK ONLINE</span>
+  </div>
+
+  <nav class="border-b border-[#1B2936] bg-[#090D10]/95 backdrop-blur px-6 py-4">
+    <a href="index.html" class="font-display text-lg font-bold tracking-tight text-[#EAF2F5]">MEDI<span
+        class="text-[#00FFC4]">GRID</span></a>
+  </nav>
+
+  <main class="flex-1 flex items-center justify-center px-6 py-16">
+    <div class="w-full max-w-sm relative border border-[#1B2936] bg-[#131920] p-8 corner-bracket glass-panel">
+      <p class="font-mono text-xs tracking-widest text-[#00FFC4] mb-2">ACCESS TERMINAL</p>
+      <h1 class="font-display text-2xl font-bold mb-8 text-[#EAF2F5]">Log in</h1>
+
+      <form id="login-form" class="flex flex-col gap-4" onsubmit="handleLogin(event)">
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">EMAIL</label>
+          <input type="email" name="email" required
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2.5 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">PASSWORD</label>
+          <input type="password" name="password" required
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2.5 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+
+        <p id="form-status" class="font-mono text-xs hidden"></p>
+
+        <button type="submit"
+          class="mt-2 bg-[#1C323E] text-[#00FFC4] border border-[#274757] font-mono text-xs tracking-widest py-3 hover:bg-[#00FFC4] hover:text-[#090D10] hover:border-[#00FFC4] hover:shadow-[0_0_12px_rgba(0,255,196,0.35)] transition-all duration-300">
+          LOG IN
+        </button>
+      </form>
+
+      <p class="font-mono text-[11px] text-[#78909C] mt-6">
+        NO ACCOUNT? <a href="signup.html" class="text-[#00FFC4] underline hover:text-[#00E5AA] transition-colors">CREATE
+          ONE →</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+# Ignore sensitive local configuration
+.env
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Optional local files
+test-conn.js
+test-insert.js

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — MEDIGRID</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="text-[#EAF2F5] font-body min-h-screen">
+
+  <!-- ===== TOP STATUS BAR ===== -->
+  <div
+    class="bg-[#131920] text-[#78909C] border-b border-[#1B2936] font-mono text-[11px] tracking-widest px-6 py-2 flex justify-between items-center">
+    <span>MEDIGRID SYS // v1.0</span>
+    <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse"></span> LIVE
+      FEED CONNECTED</span>
+  </div>
+
+  <!-- ===== NAV ===== -->
+  <nav
+    class="border-b border-[#1B2936] bg-[#090D10]/95 backdrop-blur px-6 py-4 flex justify-between items-center sticky top-0 z-30">
+    <a href="index.html" class="font-display text-lg font-bold tracking-tight text-[#EAF2F5]">MEDI<span
+        class="text-[#00FFC4]">GRID</span></a>
+    <div class="flex items-center gap-6">
+      <span id="user-name" class="font-mono text-xs tracking-widest text-[#78909C]">…</span>
+      <button onclick="handleLogout()"
+        class="font-mono text-xs tracking-widest border border-[#1C323E] text-[#78909C] px-4 py-2 hover:border-[#00FFC4] hover:text-[#00FFC4] hover:bg-[#00FFC4]/15 hover:shadow-[0_0_8px_rgba(0,255,196,0.2)] transition-all duration-300">LOG
+        OUT</button>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 py-10 grid lg:grid-cols-3 gap-10">
+
+    <!-- ===== DOCTOR STATUS BOARD ===== -->
+    <section class="lg:col-span-2">
+      <div class="flex items-baseline justify-between mb-4">
+        <h1 class="font-display text-2xl font-bold text-[#EAF2F5]">Doctor status board</h1>
+        <span class="font-mono text-[11px] text-[#78909C]">AUTO-REFRESHES ON CHANGE</span>
+      </div>
+      <div id="doctor-board" class="grid sm:grid-cols-2 gap-4">
+        <p class="font-mono text-xs text-[#78909C]">LOADING BOARD…</p>
+      </div>
+    </section>
+
+    <!-- ===== MY APPOINTMENTS ===== -->
+    <aside>
+      <h2 class="font-display text-xl font-bold mb-4 text-[#EAF2F5]">My appointments</h2>
+      <div id="my-appointments" class="flex flex-col gap-3">
+        <p class="font-mono text-xs text-[#78909C]">LOADING…</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ===== BOOKING SIDE PANEL ===== -->
+  <div id="booking-panel"
+    class="fixed top-0 right-0 h-full w-full max-w-sm bg-[#131920] border-l border-[#1B2936] text-[#EAF2F5] shadow-2xl translate-x-full transition-transform duration-300 z-40 flex flex-col glass-panel">
+    <div class="bg-[#090D10] text-[#00FFC4] border-b border-[#1B2936] px-6 py-4 flex justify-between items-center">
+      <div>
+        <p class="font-mono text-[10px] tracking-widest text-[#00FFC4]">SECURE APPOINTMENT WIZARD</p>
+        <p id="panel-doctor-name" class="font-display font-semibold text-[#EAF2F5]">—</p>
+      </div>
+      <button onclick="closeBookingPanel()" class="font-mono text-xs text-[#78909C] hover:text-[#00FFC4]">✕</button>
+    </div>
+
+    <!-- Wizard Steps Tracker -->
+    <div
+      class="px-6 py-3 bg-[#131920]/80 border-b border-[#1B2936] flex justify-between items-center font-mono text-[10px] text-[#78909C]">
+      <span class="step-indicator text-[#00FFC4] font-semibold" id="step-ind-0">1. SLOT</span>
+      <span class="text-[#1B2936]">&gt;</span>
+      <span class="step-indicator" id="step-ind-1">2. CLINICAL</span>
+      <span class="text-[#1B2936]">&gt;</span>
+      <span class="step-indicator" id="step-ind-2">3. SECURITY</span>
+      <span class="text-[#1B2936]">&gt;</span>
+      <span class="step-indicator" id="step-ind-3">4. CONSENT</span>
+    </div>
+
+    <div class="p-6 flex-1 overflow-y-auto flex flex-col gap-4">
+      <!-- STEP 0: SLOT SELECTION -->
+      <div id="booking-step-0" class="wizard-step flex flex-col gap-2">
+        <p class="font-mono text-[11px] tracking-widest text-[#78909C] mb-2">SELECT AN OPEN SLOT</p>
+        <div id="slot-list" class="flex flex-col gap-2"></div>
+      </div>
+
+      <!-- STEP 1: CLINICAL INFORMATION -->
+      <div id="booking-step-1" class="wizard-step hidden flex flex-col gap-4">
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">PATIENT FULL NAME <span
+              class="text-[#FF3860]">*</span></label>
+          <input type="text" id="patient-name" required
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">PATIENT AGE <span
+              class="text-[#FF3860]">*</span></label>
+          <input type="number" id="patient-age" required min="1" max="120"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">CONSULTATION TYPE <span
+              class="text-[#FF3860]">*</span></label>
+          <select id="consultation-type"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300">
+            <option value="General">General Consultation</option>
+            <option value="Specialist">Specialist Consultation</option>
+            <option value="Follow-up">Follow-up Checkup</option>
+            <option value="Emergency">Emergency / Urgent Care</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">CONSULTATION MODE <span
+              class="text-[#FF3860]">*</span></label>
+          <select id="consultation-mode"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300">
+            <option value="In-Clinic">In-Clinic Visit (M-Grid Complex)</option>
+            <option value="Video-Consult">Secure Video-Consultation</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">SYMPTOM SEVERITY LEVEL (1-10)</label>
+          <div class="flex items-center gap-4 mt-2">
+            <input type="range" id="symptom-severity" min="1" max="10" value="5"
+              class="w-full h-1 bg-[#1B2936] rounded-lg appearance-none cursor-pointer accent-[#00FFC4]"
+              oninput="document.getElementById('severity-val').textContent = this.value" />
+            <span id="severity-val"
+              class="font-mono text-sm text-[#00FFC4] border border-[#274757] px-2 py-0.5 min-w-[28px] text-center bg-[#090D10]">5</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">REASON FOR VISIT</label>
+          <textarea id="booking-reason" rows="2" placeholder="Describe symptoms or reasons for booking..."
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300"></textarea>
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">PREVIOUS CHECKUP?</label>
+          <select id="previous-checkup" onchange="togglePrescriptionField()"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300">
+            <option value="false">NO</option>
+            <option value="true">YES</option>
+          </select>
+        </div>
+
+        <div id="prescription-notes-group" class="hidden">
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">PREVIOUS PRESCRIPTION / NOTES</label>
+          <textarea id="prescription-notes" rows="2"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300"
+            placeholder="List any previous medicines or instructions..."></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 2: SECURITY & CONTACTS -->
+      <div id="booking-step-2" class="wizard-step hidden flex flex-col gap-4">
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">GOVERNMENT VALIDATED ID TYPE <span
+              class="text-[#FF3860]">*</span></label>
+          <select id="govt-id-type"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300">
+            <option value="Aadhaar">Aadhaar Card (12-digit)</option>
+            <option value="Passport">Passport</option>
+            <option value="Driving License">Driving License</option>
+            <option value="Voter ID">Voter ID</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">GOVERNMENT ID NUMBER <span
+              class="text-[#FF3860]">*</span></label>
+          <input type="text" id="govt-id-number" required placeholder="XXXX-XXXX-XXXX / Passport No"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">EMERGENCY CONTACT NAME <span
+              class="text-[#FF3860]">*</span></label>
+          <input type="text" id="emergency-name" required placeholder="Name of relative / guardian"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">EMERGENCY CONTACT PHONE <span
+              class="text-[#FF3860]">*</span></label>
+          <input type="tel" id="emergency-phone" required placeholder="10-digit mobile number"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300" />
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">KNOWN MEDICAL HISTORY (SELECT ALL)</label>
+          <div class="grid grid-cols-2 gap-2 mt-2 font-mono text-[11px]">
+            <label class="flex items-center gap-2 cursor-pointer text-[#78909C] hover:text-[#EAF2F5] select-none">
+              <input type="checkbox" name="med-history" value="Allergies"
+                class="rounded accent-[#00FFC4] bg-[#090D10] border-[#1B2936]" /> Allergies
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-[#78909C] hover:text-[#EAF2F5] select-none">
+              <input type="checkbox" name="med-history" value="Diabetes"
+                class="rounded accent-[#00FFC4] bg-[#090D10] border-[#1B2936]" /> Diabetes
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-[#78909C] hover:text-[#EAF2F5] select-none">
+              <input type="checkbox" name="med-history" value="Heart Issues"
+                class="rounded accent-[#00FFC4] bg-[#090D10] border-[#1B2936]" /> Heart issue
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-[#78909C] hover:text-[#EAF2F5] select-none">
+              <input type="checkbox" name="med-history" value="Hypertension"
+                class="rounded accent-[#00FFC4] bg-[#090D10] border-[#1B2936]" /> Hypertension
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: SECURITY VERIFICATION & CONSENT -->
+      <div id="booking-step-3" class="wizard-step hidden flex flex-col gap-4">
+        <!-- ROBOT PROTECTION -->
+        <div class="border border-[#274757]/40 bg-[#090D10] p-4 flex flex-col gap-2 rounded">
+          <label class="font-mono text-[10px] tracking-widest text-[#00FFC4]">ROBOT PROTECTION CHECK</label>
+          <div class="flex items-center justify-between gap-4 mt-1">
+            <span id="captcha-question"
+              class="font-mono text-sm text-[#EAF2F5] select-none tracking-widest bg-[#131920] border border-[#1B2936] px-3 py-1.5 flex-1 text-center font-bold">—</span>
+            <input type="number" id="captcha-answer" required placeholder="Answer"
+              class="w-24 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-1.5 text-sm focus:border-[#00FFC4] outline-none font-mono text-center" />
+          </div>
+        </div>
+
+        <!-- TERMS & CONSENT -->
+        <div class="border border-[#1B2936] bg-[#090D10] p-4 flex flex-col gap-3">
+          <label class="flex gap-2 items-start cursor-pointer select-none">
+            <input type="checkbox" id="legal-consent" required onchange="toggleVerifyNextButton()"
+              class="mt-1 rounded accent-[#00FFC4]" />
+            <span class="font-mono text-[10px] text-[#78909C] leading-normal">
+              I consent to sharing my medical details. I confirm that all clinical info is accurate.
+            </span>
+          </label>
+        </div>
+
+        <div>
+          <label class="font-mono text-[11px] tracking-widest text-[#78909C]">DIGITAL SIGNATURE (FULL PATIENT NAME)
+            <span class="text-[#FF3860]">*</span></label>
+          <input type="text" id="digital-signature" placeholder="Type full name to e-sign"
+            oninput="toggleVerifyNextButton()"
+            class="w-full mt-1 border border-[#1B2936] bg-[#090D10] text-[#EAF2F5] px-3 py-2 text-sm focus:border-[#00FFC4] focus:shadow-[0_0_8px_rgba(0,255,196,0.25)] outline-none transition-all duration-300 font-mono" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Wizard Navigation buttons footer -->
+    <div id="wizard-footer" class="border-t border-[#1B2936] bg-[#090D10] px-6 py-4 flex gap-3">
+      <button id="btn-cancel" onclick="closeBookingPanel()"
+        class="flex-1 font-mono text-[10px] tracking-widest text-[#78909C] border border-[#1B2936] py-2.5 hover:bg-[#FF3860]/10 hover:text-[#FF3860] hover:border-[#FF3860]/20 transition-all duration-300">CANCEL</button>
+      <button id="btn-prev" onclick="prevWizardStep()" disabled
+        class="flex-1 hidden font-mono text-[10px] tracking-widest text-[#78909C] border border-[#1B2936] py-2.5 hover:bg-[#1C323E]/50 transition-all duration-300">BACK</button>
+      <button id="btn-next" onclick="nextWizardStep()" disabled
+        class="flex-1 font-mono text-[10px] tracking-widest bg-[#1C323E] text-[#00FFC4] border border-[#274757] py-2.5 disabled:bg-[#1B2936] disabled:text-[#78909C] disabled:border-transparent disabled:cursor-not-allowed hover:bg-[#00FFC4] hover:text-[#090D10] hover:border-[#00FFC4] hover:shadow-[0_0_8px_rgba(0,255,196,0.25)] transition-all duration-300">NEXT
+        →</button>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- ===== TICKET CONFIRMATION MODAL ===== -->
+  <div id="ticket-modal" class="hidden fixed inset-0 bg-[#090D10]/80 z-50 flex items-center justify-center px-6">
+    <div
+      class="bg-[#131920] max-w-sm w-full relative corner-bracket border border-[#1B2936] text-[#EAF2F5] glass-panel">
+      <div class="hazard-strip"></div>
+      <div class="p-8 text-center">
+        <p class="font-mono text-[11px] tracking-widest text-[#78909C] mb-1">APPOINTMENT CONFIRMED</p>
+        <h2 class="font-display text-3xl font-bold mb-4 text-[#EAF2F5]">WORK ORDER</h2>
+        <p class="font-mono text-4xl tracking-widest text-[#00FFC4] drop-shadow-[0_0_8px_rgba(0,255,196,0.3)] mb-2"
+          id="ticket-code">—</p>
+        <p class="font-mono text-xs text-[#78909C] mb-6">STATUS: <span id="ticket-status"
+            class="text-[#00FF87]">—</span></p>
+        <p class="text-sm text-[#78909C] mb-6">Show this ticket code at the clinic front desk, or find it anytime under
+          "My appointments."</p>
+        <button onclick="closeTicket()"
+          class="w-full bg-[#1C323E] text-[#00FFC4] border border-[#274757] font-mono text-xs tracking-widest py-3 hover:bg-[#00FFC4] hover:text-[#090D10] hover:border-[#00FFC4] hover:shadow-[0_0_12px_rgba(0,255,196,0.35)] transition-all duration-300">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script>initDashboard();</script>
+</body>
+
+</html>

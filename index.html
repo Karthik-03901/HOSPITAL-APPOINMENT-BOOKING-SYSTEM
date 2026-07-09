@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MEDIGRID — Intelligent Healthcare Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="text-[#EAF2F5] font-body">
+
+  <!-- ===== TOP STATUS BAR ===== -->
+  <div class="bg-[#131920] text-[#78909C] border-b border-[#1B2936] font-mono text-[11px] tracking-widest px-6 py-2 flex justify-between items-center">
+    <span>MEDIGRID SYS // v1.0</span>
+    <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#00FF87] animate-pulse"></span> NETWORK ONLINE</span>
+  </div>
+
+  <!-- ===== NAV ===== -->
+  <nav class="border-b border-[#1B2936] bg-[#090D10]/90 backdrop-blur px-6 py-4 flex justify-between items-center sticky top-0 z-30">
+    <a href="index.html" class="font-display text-lg font-bold tracking-tight text-[#EAF2F5]">MEDI<span class="text-[#00FFC4]">GRID</span></a>
+    <div class="flex items-center gap-6">
+      <a href="login.html" class="font-mono text-xs tracking-widest text-[#78909C] hover:text-[#00FFC4] transition-colors">LOG IN</a>
+      <a href="signup.html" class="font-mono text-xs tracking-widest bg-[#1D262F] text-[#00FFC4] border border-[#1C323E] px-4 py-2 hover:bg-[#00FFC4] hover:text-[#090D10] hover:border-[#00FFC4] transition-all duration-300">GET ACCESS →</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="px-6 py-20 max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <p class="font-mono text-xs tracking-widest text-[#00FFC4] mb-4">REAL-TIME APPOINTMENT SYSTEM</p>
+      <h1 class="font-display text-5xl md:text-6xl font-bold leading-[1.05] mb-6 text-[#EAF2F5]">
+        Book care<br/>on a live<br/><span class="text-[#00FFC4] drop-shadow-[0_0_8px_rgba(0,255,196,0.3)]">status board.</span>
+      </h1>
+      <p class="text-[#78909C] text-lg max-w-md mb-8">
+        MediGrid reads doctor availability the moment it changes — no phone queues, no stale calendars. See who's open, reserve a slot, get a ticket.
+      </p>
+      <div class="flex gap-4">
+        <a href="signup.html" class="font-mono text-xs tracking-widest bg-[#00FFC4] text-[#090D10] px-6 py-3 hover:bg-[#00E5AA] hover:shadow-[0_0_12px_rgba(0,255,196,0.4)] transition-all duration-300">CREATE ACCOUNT</a>
+        <a href="login.html" class="font-mono text-xs tracking-widest border border-[#78909C] text-[#EAF2F5] px-6 py-3 hover:border-[#00FFC4] hover:text-[#00FFC4] hover:shadow-[0_0_8px_rgba(0,255,196,0.2)] transition-all duration-300">LOG IN</a>
+      </div>
+    </div>
+
+    <!-- Signature element: live status board preview -->
+    <div class="relative border border-[#1B2936] bg-[#131920] p-1 corner-bracket glass-panel">
+      <div class="bg-[#090D10] text-[#00FFC4] border-b border-[#1B2936] font-mono text-[10px] tracking-widest px-4 py-2 flex justify-between">
+        <span>DOCTOR STATUS BOARD</span>
+        <span>LIVE</span>
+      </div>
+      <div class="divide-y divide-[#1B2936]">
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-sm font-medium text-[#EAF2F5]">Dr. Anita Rao — Cardiology</span>
+          <span class="flex items-center gap-2 font-mono text-[10px] tracking-widest text-[#00FF87]"><span class="w-2 h-2 rounded-full bg-[#00FF87] animate-pulse"></span>AVAILABLE</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-sm font-medium text-[#EAF2F5]">Dr. Suresh Iyer — Orthopedics</span>
+          <span class="flex items-center gap-2 font-mono text-[10px] tracking-widest text-[#FF3860]"><span class="w-2 h-2 rounded-full bg-[#FF3860]"></span>IN SESSION</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3">
+          <span class="text-sm font-medium text-[#EAF2F5]">Dr. Meera Nair — Dermatology</span>
+          <span class="flex items-center gap-2 font-mono text-[10px] tracking-widest text-[#00FF87]"><span class="w-2 h-2 rounded-full bg-[#00FF87] animate-pulse"></span>AVAILABLE</span>
+        </div>
+        <div class="flex items-center justify-between px-4 py-3 opacity-55">
+          <span class="text-sm font-medium text-[#78909C]">Dr. Karthik Menon — General Medicine</span>
+          <span class="flex items-center gap-2 font-mono text-[10px] tracking-widest text-[#78909C]"><span class="w-2 h-2 rounded-full bg-[#78909C]"></span>OFFLINE</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hazard-strip"></div>
+
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="px-6 py-20 max-w-6xl mx-auto">
+    <h2 class="font-display text-3xl font-bold mb-12 text-[#EAF2F5]">HOW IT RUNS</h2>
+    <div class="grid md:grid-cols-3 gap-px bg-[#1B2936] border border-[#1B2936]">
+      <div class="bg-[#131920] p-8 border-r border-[#1B2936] md:border-r-0">
+        <p class="font-mono text-xs text-[#00FFC4] mb-3">STAGE 01</p>
+        <h3 class="font-display text-xl font-semibold mb-2 text-[#EAF2F5]">Scan the board</h3>
+        <p class="text-sm text-[#78909C]">Browse verified doctors by specialty, fee, and live status — updated the instant a slot opens or closes.</p>
+      </div>
+      <div class="bg-[#131920] p-8 border-r border-[#1B2936] md:border-r-0">
+        <p class="font-mono text-xs text-[#00FFC4] mb-3">STAGE 02</p>
+        <h3 class="font-display text-xl font-semibold mb-2 text-[#EAF2F5]">Reserve a slot</h3>
+        <p class="text-sm text-[#78909C]">Pick an open time. The slot locks the moment you confirm — no double-booking, no waiting on a callback.</p>
+      </div>
+      <div class="bg-[#131920] p-8">
+        <p class="font-mono text-xs text-[#00FFC4] mb-3">STAGE 03</p>
+        <h3 class="font-display text-xl font-semibold mb-2 text-[#EAF2F5]">Get your ticket</h3>
+        <p class="text-sm text-[#78909C]">A ticket code confirms your appointment. Show it at the clinic desk or track it from your dashboard.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="border-t border-[#1B2936] px-6 py-8 max-w-6xl mx-auto flex justify-between items-center bg-[#090D10]/50 sticky bottom-0">
+    <span class="font-mono text-[11px] text-[#78909C]">© 2026 MEDIGRID</span>
+    <span class="font-mono text-[11px] text-[#78909C]">BUILT ON SUPABASE</span>
+  </footer>
+
+</body>
+</html>
