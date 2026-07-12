@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Hospital Appointment Booking System - Tailwind CSS + Supabase",
   "scripts": {
-    "build": "npm run build:css",
+    "build": "node build.js",
     "build:css": "tailwindcss -i ./css/input.css -o ./css/output.css --minify",
     "watch:css": "tailwindcss -i ./css/input.css -o ./css/output.css --watch",
     "dev": "concurrently \"npm run watch:css\" \"npx serve .\""
