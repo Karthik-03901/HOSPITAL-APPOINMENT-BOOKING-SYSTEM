@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+</head>
+
+<body class="min-h-screen bg-paper font-body">
+
+  <div class="flex min-h-screen flex-col items-center justify-center px-6 py-12">
+    <div class="mx-auto w-full max-w-sm">
+
+      <a href="../index.html" class="mb-8 flex items-center gap-2.5 hover:opacity-80 transition-opacity cursor-pointer">
+        <div
+          class="flex h-8 w-8 items-center justify-center rounded-md bg-teal-500 font-display text-sm font-bold text-navy-950">
+          M</div>
+        <span class="font-display text-lg font-semibold text-navy-900">MediQueue</span>
+      </a>
+
+      <h2 class="font-display text-2xl font-semibold text-navy-900">Create your patient account</h2>
+      <p class="mt-1.5 text-sm text-slate-500">You'll be able to book appointments right after.</p>
+
+      <form id="register-form" class="mt-8 space-y-5">
+        <div>
+          <label for="full_name" class="field-label">Full name</label>
+          <input id="full_name" type="text" required class="field-input" placeholder="Karthik Suresh" />
+        </div>
+
+        <div>
+          <label for="email" class="field-label">Email address</label>
+          <input id="email" type="email" required class="field-input" placeholder="you@example.com" />
+        </div>
+
+        <div>
+          <label for="phone" class="field-label">Phone number</label>
+          <input id="phone" type="tel" class="field-input" placeholder="+91 90000 00000" />
+        </div>
+
+        <div>
+          <label for="password" class="field-label">Password</label>
+          <input id="password" type="password" required minlength="6" class="field-input"
+            placeholder="At least 6 characters" />
+        </div>
+
+        <p id="register-error" class="hidden text-sm font-medium text-coral-500"></p>
+        <p id="register-success" class="hidden text-sm font-medium text-teal-600"></p>
+
+        <button type="submit" class="btn-primary w-full">
+          Create account
+        </button>
+      </form>
+
+      <p class="mt-8 text-center text-sm text-slate-500">
+        Already have an account?
+        <a href="../index.html" class="font-semibold text-teal-600 hover:text-teal-500">Sign in</a>
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { signUp } from "../js/auth.js";
+
+    const form = document.getElementById("register-form");
+    const errorEl = document.getElementById("register-error");
+    const successEl = document.getElementById("register-success");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.classList.add("hidden");
+      successEl.classList.add("hidden");
+
+      const fullName = document.getElementById("full_name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        await signUp({ email, password, fullName, phone, role: "patient" });
+        successEl.textContent = "Account created. Check your email to confirm, then sign in.";
+        successEl.classList.remove("hidden");
+        form.reset();
+      } catch (err) {
+        console.error("Registration error details:", err);
+        errorEl.textContent = err.message || (typeof err === 'object' ? JSON.stringify(err) : String(err)) || "Unable to create account.";
+        errorEl.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+
+</html>

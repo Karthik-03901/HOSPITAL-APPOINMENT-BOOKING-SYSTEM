@@ -1,0 +1,19 @@
+{
+  "name": "hospital-appointment-booking",
+  "version": "0.1.0",
+  "description": "Hospital Appointment Booking System - Tailwind CSS + Supabase",
+  "scripts": {
+    "build": "npm run build:css",
+    "build:css": "tailwindcss -i ./css/input.css -o ./css/output.css --minify",
+    "watch:css": "tailwindcss -i ./css/input.css -o ./css/output.css --watch",
+    "dev": "concurrently \"npm run watch:css\" \"npx serve .\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.10",
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.3"
+  }
+}

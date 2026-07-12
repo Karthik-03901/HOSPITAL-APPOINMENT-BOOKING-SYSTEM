@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Appointment — MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-blue-50/20 font-body antialiased">
+  
+  <!-- Header -->
+  <header class="glass-white border-b border-slate-200/50 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 font-display text-lg font-bold text-white shadow-soft">M</div>
+          <span class="font-display text-xl font-bold text-navy-900">MediQueue</span>
+        </a>
+        <a href="./dashboard-patient.html" class="btn-secondary">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Steps -->
+  <div class="max-w-5xl mx-auto px-6 py-8">
+    <div class="flex items-center justify-between mb-12">
+      <div class="flex-1 flex items-center">
+        <div id="step-1-indicator" class="step-indicator active" onclick="navigateToStepIfAllowed(1)">
+          <button class="step-circle">1</button>
+          <div class="step-label">Department</div>
+        </div>
+        <div class="step-line"></div>
+      </div>
+      <div class="flex-1 flex items-center">
+        <div id="step-2-indicator" class="step-indicator" onclick="navigateToStepIfAllowed(2)">
+          <button class="step-circle">2</button>
+          <div class="step-label">Doctor</div>
+        </div>
+        <div class="step-line"></div>
+      </div>
+      <div class="flex-1 flex items-center">
+        <div id="step-3-indicator" class="step-indicator" onclick="navigateToStepIfAllowed(3)">
+          <button class="step-circle">3</button>
+          <div class="step-label">Date & Time</div>
+        </div>
+        <div class="step-line"></div>
+      </div>
+      <div class="flex-1 flex items-center justify-end">
+        <div id="step-4-indicator" class="step-indicator" onclick="navigateToStepIfAllowed(4)">
+          <button class="step-circle">4</button>
+          <div class="step-label">Confirm</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Department Selection -->
+    <div id="step-1" class="step-content">
+      <div class="text-center mb-10">
+        <h1 class="font-display text-4xl font-bold text-navy-900 mb-3">Select Department</h1>
+        <p class="text-lg text-slate-600">Choose the medical department for your consultation</p>
+      </div>
+      
+      <div id="departments-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Departments will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Step 2: Doctor Selection -->
+    <div id="step-2" class="step-content hidden">
+      <div class="text-center mb-10">
+        <h1 class="font-display text-4xl font-bold text-navy-900 mb-3">Choose Doctor</h1>
+        <p class="text-lg text-slate-600">Select a specialist from <span id="dept-name" class="text-teal-600 font-semibold"></span></p>
+      </div>
+      
+      <div id="doctors-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Doctors will be loaded here -->
+      </div>
+      
+      <div class="mt-8 text-center">
+        <button onclick="previousStep()" class="btn-ghost">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Departments
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Date & Time Selection -->
+    <div id="step-3" class="step-content hidden">
+      <div class="text-center mb-10">
+        <h1 class="font-display text-4xl font-bold text-navy-900 mb-3">Select Date & Time</h1>
+        <p class="text-lg text-slate-600">Choose your preferred appointment slot</p>
+      </div>
+      
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Doctor Info Card -->
+        <div class="lg:col-span-1">
+          <div class="card-glass p-6 sticky top-24">
+            <div class="text-center mb-6">
+              <div class="avatar avatar-xl bg-teal-100 text-teal-700 mx-auto mb-4" id="doctor-avatar">
+                DR
+              </div>
+              <h3 class="font-display text-xl font-bold text-navy-900" id="doctor-name-display"></h3>
+              <p class="text-sm text-slate-600" id="doctor-spec-display"></p>
+            </div>
+            
+            <div class="space-y-4 text-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-600">Experience</span>
+                <span class="font-semibold" id="doctor-exp"></span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-600">Rating</span>
+                <span class="font-semibold" id="doctor-rating"></span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-600">Consultation Fee</span>
+                <span class="font-semibold text-teal-600" id="doctor-fee"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Date & Time Selection -->
+        <div class="lg:col-span-2">
+          <div class="card p-8">
+            <div class="mb-6">
+              <label class="field-label">Select Date</label>
+              <input type="date" id="appointment-date" class="field-input" />
+              <p class="text-xs text-slate-500 mt-2">Next 30 days available for booking</p>
+            </div>
+            
+            <div>
+              <label class="field-label mb-4">Available Time Slots</label>
+              <div id="time-slots-container" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                <!-- Time slots will be loaded here -->
+              </div>
+              <div id="no-slots-message" class="hidden text-center py-12">
+                <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p class="text-slate-600 font-medium">No slots available</p>
+                <p class="text-sm text-slate-500 mt-2">Please select a different date</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-between mt-8">
+            <button onclick="previousStep()" class="btn-ghost">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Doctors
+            </button>
+            <button onclick="goToConfirmation()" id="continue-to-confirm-btn" class="btn-primary" disabled>
+              Continue to Confirmation
+              <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Confirmation -->
+    <div id="step-4" class="step-content hidden">
+      <div class="text-center mb-10">
+        <h1 class="font-display text-4xl font-bold text-navy-900 mb-3">Confirm Appointment</h1>
+        <p class="text-lg text-slate-600">Review your appointment details</p>
+      </div>
+      
+      <div class="max-w-3xl mx-auto">
+        <!-- Appointment Summary Card -->
+        <div class="token-ticket-glass mb-8">
+          <div class="relative z-10 flex items-start justify-between mb-6">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400" id="summary-dept-doctor"></p>
+              <p class="mt-3 font-mono text-6xl font-bold text-white" id="summary-token">---</p>
+            </div>
+            <span class="status-pill bg-amber-500/20 text-amber-300 border border-amber-400/30">
+              <span class="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span> Pending
+            </span>
+          </div>
+          
+          <div class="perforation relative z-10"></div>
+          
+          <div class="relative z-10 grid grid-cols-2 gap-5 text-sm">
+            <div class="space-y-1">
+              <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Date</p>
+              <p class="font-mono text-white font-semibold text-base" id="summary-date"></p>
+            </div>
+            <div class="space-y-1">
+              <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Time</p>
+              <p class="font-mono text-white font-semibold text-base" id="summary-time"></p>
+            </div>
+            <div class="space-y-1">
+              <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Consultation Fee</p>
+              <p class="font-mono text-teal-400 font-bold text-base" id="summary-fee"></p>
+            </div>
+            <div class="space-y-1">
+              <p class="text-xs uppercase tracking-widest text-slate-500 font-bold">Est. Wait</p>
+              <p class="font-mono text-white font-semibold text-base" id="summary-wait"></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Additional Details Form -->
+        <div class="card p-8 mb-8">
+          <h3 class="font-display text-xl font-bold text-navy-900 mb-6">Additional Information</h3>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="field-label">Reason for Visit <span class="text-coral-500">*</span></label>
+              <textarea id="reason" class="field-textarea" rows="4" placeholder="Please describe your symptoms, concerns, or reason for consultation..." required></textarea>
+              <p class="text-xs text-slate-500 mt-2">This helps the doctor prepare for your consultation</p>
+            </div>
+            
+            <div>
+              <label class="field-label">Any existing conditions or medications?</label>
+              <textarea id="medical-history" class="field-textarea" rows="3" placeholder="E.g., diabetes, hypertension, current medications..."></textarea>
+            </div>
+            
+            <div>
+              <label class="field-label">Upload Medical Documents (Optional)</label>
+              <div class="border-2 border-dashed border-slate-200 rounded-xl p-8 text-center hover:border-teal-400 transition-colors cursor-pointer">
+                <svg class="w-12 h-12 text-slate-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p class="text-sm font-medium text-slate-700 mb-1">Click to upload or drag and drop</p>
+                <p class="text-xs text-slate-500">PDF, JPG, PNG up to 10MB</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start gap-3 p-4 rounded-xl bg-teal-50 border border-teal-200">
+              <svg class="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="text-sm">
+                <p class="font-semibold text-teal-900 mb-1">Important Notes:</p>
+                <ul class="text-teal-700 space-y-1 list-disc list-inside">
+                  <li>Please arrive 15 minutes before your scheduled time</li>
+                  <li>Bring your ID and any previous medical records</li>
+                  <li>You'll receive a confirmation SMS with your token number</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex items-center justify-between">
+          <button onclick="previousStep()" class="btn-ghost">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Date Selection
+          </button>
+          <button onclick="confirmBooking()" id="confirm-booking-btn" class="btn-primary text-lg px-8 py-4">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Confirm Booking
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" class="fixed inset-0 bg-navy-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="glass-white rounded-2xl p-8 w-full max-w-md transform scale-95 transition-transform duration-300 text-center" id="success-modal-content">
+      <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      
+      <h2 class="font-display text-3xl font-bold text-navy-900 mb-3">Booking Confirmed!</h2>
+      <p class="text-slate-600 mb-6">Your appointment has been successfully scheduled</p>
+      
+      <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6">
+        <p class="text-sm font-semibold text-teal-900 mb-2">Your Token Number</p>
+        <p class="font-mono text-4xl font-bold text-teal-600" id="final-token">A-015</p>
+      </div>
+      
+      <div class="flex flex-col gap-3">
+        <a href="./dashboard-patient.html" class="btn-primary w-full">
+          Go to Dashboard
+        </a>
+        <button onclick="closeSuccessModal()" class="btn-secondary w-full">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .step-circle {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #D4DCE3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #5B7083;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-size: 1.125rem;
+      line-height: 1;
+    }
+    
+    .step-circle:hover {
+      border-color: #0E9384;
+      transform: scale(1.05);
+    }
+    
+    .step-indicator.active .step-circle {
+      background: linear-gradient(135deg, #0E9384, #2BB3A3);
+      border-color: #0E9384;
+      color: white;
+      box-shadow: 0 4px 12px rgba(14, 147, 132, 0.3);
+    }
+    
+    .step-indicator.completed .step-circle {
+      background: #D4F3F0;
+      border-color: #0E9384;
+      color: #0E9384;
+      cursor: pointer;
+    }
+    
+    .step-indicator.completed .step-circle:hover {
+      background: #B8EDE8;
+    }
+    
+    .step-indicator:not(.completed):not(.active) .step-circle {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .step-indicator:not(.completed):not(.active) .step-circle:hover {
+      border-color: #D4DCE3;
+      transform: none;
+    }
+    
+    .step-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #5B7083;
+      text-align: center;
+    }
+    
+    .step-indicator.active .step-label {
+      color: #0E9384;
+    }
+    
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #E7EDF1;
+      margin: 0 1rem;
+    }
+    
+    .step-indicator.completed ~ .step-indicator .step-line {
+      background: linear-gradient(90deg, #0E9384, #E7EDF1);
+    }
+    
+    .time-slot {
+      padding: 0.75rem 1rem;
+      border: 2px solid #E7EDF1;
+      border-radius: 0.75rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    .time-slot:hover:not(.booked) {
+      border-color: #0E9384;
+      background: #E8F9F7;
+      transform: translateY(-2px);
+    }
+    
+    .time-slot.selected {
+      background: linear-gradient(135deg, #0E9384, #2BB3A3);
+      border-color: #0E9384;
+      color: white;
+      box-shadow: 0 4px 12px rgba(14, 147, 132, 0.3);
+    }
+    
+    .time-slot.booked {
+      background: #F3F6F8;
+      border-color: #E7EDF1;
+      color: #B7C5D1;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  </style>
+
+  <script type="module" src="../js/pages/booking.js"></script>
+</body>
+</html>

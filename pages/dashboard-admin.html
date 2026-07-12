@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+</head>
+<body class="min-h-screen bg-paper font-body">
+  <header class="flex items-center justify-between border-b border-slate-100 bg-white px-6 py-4">
+    <a href="../index.html" class="flex items-center gap-2.5 hover:opacity-80 transition-opacity cursor-pointer">
+      <div class="flex h-8 w-8 items-center justify-center rounded-md bg-teal-500 font-display text-sm font-bold text-navy-950">M</div>
+      <span class="font-display text-lg font-semibold text-navy-900">MediQueue</span>
+    </a>
+    <button id="logout-btn" class="btn-secondary">Sign out</button>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-6 py-10">
+    <h1 class="font-display text-2xl font-semibold text-navy-900">Admin overview</h1>
+    <p class="mt-1 text-sm text-slate-500">This is a scaffold view — appointment booking and history list wire up next.</p>
+
+    <a href="./dashboard-admin.html" class="btn-primary mt-6 inline-flex">Manage schedule</a>
+
+    <div id="appointments-list" class="mt-10 rounded-lg border border-slate-100 bg-white p-6 text-sm text-slate-500">
+      No appointments loaded yet — this panel will pull from the <code class="font-mono text-xs text-navy-800">appointments</code> table, showing all appointments across doctors.
+    </div>
+  </main>
+
+  <script type="module">
+    import { getCurrentProfile, signOut } from "../js/auth.js";
+
+    // Simple route guard — redirect to login if not authenticated.
+    const profile = await getCurrentProfile().catch(() => null);
+    if (!profile) window.location.href = "../index.html";
+
+    document.getElementById("logout-btn").addEventListener("click", async () => {
+      await signOut();
+      window.location.href = "../index.html";
+    });
+  </script>
+</body>
+</html>

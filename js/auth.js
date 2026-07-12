@@ -1,79 +1,66 @@
-// ============================================================
-// AUTH — signup / login / logout handlers
-// ============================================================
+import { supabase } from "./supabaseClient.js";
 
-function setFormStatus(el, message, isError = false) {
-  el.textContent = message;
-  el.classList.remove("hidden");
-  el.classList.toggle("text-[#B3261E]", isError);
-  el.classList.toggle("text-[#0E7C7B]", !isError);
-}
-
-// ---- SIGN UP ----
-async function handleSignup(event) {
-  event.preventDefault();
-  const form = event.target;
-  const statusEl = document.getElementById("form-status");
-  const submitBtn = form.querySelector("button[type=submit]");
-
-  const fullName = form.fullName.value.trim();
-  const email = form.email.value.trim();
-  const password = form.password.value;
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = "CREATING ACCOUNT…";
-
-  const { data, error } = await db.auth.signUp({
+/**
+ * Signs up a new user and creates their profile row.
+ * @param {{email: string, password: string, fullName: string, role: "patient"|"doctor"|"admin", phone?: string}} params
+ */
+export async function signUp({ email, password, fullName, role, phone }) {
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName, role: "patient" },
-    },
+      data: {
+        full_name: fullName,
+        role: role,
+        phone: phone ?? null
+      }
+    }
   });
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = "CREATE ACCOUNT";
-
-  if (error) {
-    setFormStatus(statusEl, `ERROR — ${error.message}`, true);
-    return;
-  }
-
-  setFormStatus(
-    statusEl,
-    "ACCOUNT CREATED — check your email to confirm, then log in."
-  );
-  form.reset();
+  if (error) throw error;
+  return data;
 }
 
-// ---- LOG IN ----
-async function handleLogin(event) {
-  event.preventDefault();
-  const form = event.target;
-  const statusEl = document.getElementById("form-status");
-  const submitBtn = form.querySelector("button[type=submit]");
-
-  const email = form.email.value.trim();
-  const password = form.password.value;
-
-  submitBtn.disabled = true;
-  submitBtn.textContent = "VERIFYING…";
-
-  const { data, error } = await db.auth.signInWithPassword({ email, password });
-
-  submitBtn.disabled = false;
-  submitBtn.textContent = "LOG IN";
-
-  if (error) {
-    setFormStatus(statusEl, `ERROR — ${error.message}`, true);
-    return;
-  }
-
-  window.location.href = "dashboard.html";
+/**
+ * Signs in an existing user with email/password.
+ */
+export async function signIn({ email, password }) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
 }
 
-// ---- LOG OUT ----
-async function handleLogout() {
-  await db.auth.signOut();
-  window.location.href = "login.html";
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+}
+
+/**
+ * Returns the current session's profile (role, name, etc.) or null.
+ */
+export async function getCurrentProfile() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const user = sessionData.session?.user;
+  if (!user) return null;
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error) throw error;
+  return profile;
+}
+
+/**
+ * Redirects to the correct dashboard based on role.
+ * Call this after successful login.
+ */
+export function redirectToDashboard(role) {
+  const routes = {
+    patient: "./pages/dashboard-patient.html",
+    doctor: "./pages/dashboard-doctor.html",
+    admin: "./pages/dashboard-admin.html"
+  };
+  window.location.href = routes[role] ?? "./index.html";
 }
