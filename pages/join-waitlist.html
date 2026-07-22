@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Waitlist — MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-blue-50/20 font-body antialiased">
+  
+  <!-- Header -->
+  <header class="glass-white border-b border-slate-200/50 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../index.html" class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 font-display text-lg font-bold text-white shadow-soft">M</div>
+          <span class="font-display text-xl font-bold text-navy-900">MediQueue</span>
+        </a>
+        <a href="./book-appointment.html" class="btn-secondary">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Booking
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-3xl mx-auto px-6 py-12">
+    
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 mb-4">
+        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h1 class="font-display text-4xl font-bold text-navy-900 mb-3">Join Waitlist</h1>
+      <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+        All slots are currently full. Join the waitlist and we'll notify you instantly if a slot opens up!
+      </p>
+    </div>
+
+    <!-- How It Works -->
+    <div class="card p-6 mb-8 bg-teal-50 border-teal-200">
+      <h3 class="font-semibold text-teal-900 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        How It Works
+      </h3>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="flex gap-3">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">1</div>
+          <div>
+            <p class="font-semibold text-teal-900 text-sm">Join Waitlist</p>
+            <p class="text-xs text-teal-700">Fill in your details below</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">2</div>
+          <div>
+            <p class="font-semibold text-teal-900 text-sm">Get Notified</p>
+            <p class="text-xs text-teal-700">SMS + Email when slot opens</p>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">3</div>
+          <div>
+            <p class="font-semibold text-teal-900 text-sm">Confirm Fast</p>
+            <p class="text-xs text-teal-700">You have 15 min to confirm</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Waitlist Form -->
+    <div class="card p-8">
+      <form id="waitlist-form" class="space-y-6">
+        <!-- Personal Info -->
+        <div>
+          <h3 class="font-display text-lg font-bold text-navy-900 mb-4">Your Information</h3>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Full Name *</label>
+              <input 
+                type="text" 
+                id="patient-name" 
+                required
+                class="input-field"
+                placeholder="John Doe"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Email *</label>
+              <input 
+                type="email" 
+                id="patient-email" 
+                required
+                class="input-field"
+                placeholder="john@example.com"
+              />
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Phone Number *</label>
+            <input 
+              type="tel" 
+              id="patient-phone" 
+              required
+              class="input-field"
+              placeholder="+1 (555) 123-4567"
+            />
+            <p class="text-xs text-slate-500 mt-1">We'll send SMS notification when a slot opens</p>
+          </div>
+        </div>
+
+        <!-- Appointment Preferences -->
+        <div class="pt-6 border-t border-slate-200">
+          <h3 class="font-display text-lg font-bold text-navy-900 mb-4">Appointment Preferences</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Select Doctor *</label>
+              <select id="doctor-select" required class="input-field">
+                <option value="">Choose a doctor...</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Preferred Date *</label>
+              <input 
+                type="date" 
+                id="preferred-date" 
+                required
+                class="input-field"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Preferred Time Range *</label>
+              <select id="time-range" required class="input-field">
+                <option value="any">Any Time</option>
+                <option value="morning">Morning (8 AM - 12 PM)</option>
+                <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                <option value="evening">Evening (5 PM - 8 PM)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Reason for Visit *</label>
+              <textarea 
+                id="reason" 
+                required
+                rows="3"
+                class="input-field"
+                placeholder="Describe your symptoms or reason for visit"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-6 border-t border-slate-200">
+          <button type="submit" id="join-btn" class="btn-primary w-full">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Join Waitlist
+          </button>
+          <p class="text-xs text-center text-slate-500 mt-3">
+            By joining, you agree to receive notifications via SMS and email
+          </p>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="success-modal-content" class="card max-w-md mx-4 p-8 transform scale-95 transition-transform duration-300">
+      <div class="text-center">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 class="font-display text-2xl font-bold text-navy-900 mb-2">You're on the Waitlist!</h2>
+        <p class="text-slate-600 mb-2">Position: <span id="waitlist-position" class="font-bold text-teal-600">#1</span></p>
+        <p class="text-sm text-slate-600 mb-6">
+          We'll notify you via SMS and email the moment a slot opens up. You'll have 15 minutes to confirm.
+        </p>
+        <div class="space-y-3">
+          <button onclick="window.location.href='./waitlist-status.html?id=' + currentWaitlistId" class="btn-primary w-full">
+            View Waitlist Status
+          </button>
+          <button onclick="window.location.href='../index.html'" class="btn-secondary w-full">
+            Back to Home
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/pages/join-waitlist.js"></script>
+</body>
+</html>

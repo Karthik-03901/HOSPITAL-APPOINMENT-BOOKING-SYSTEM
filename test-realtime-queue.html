@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Real-Time Queue</title>
+  <link rel="stylesheet" href="./css/output.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold mb-8 text-navy-900">🔴 Real-Time Queue Tester</h1>
+    
+    <!-- Connection Status -->
+    <div class="card mb-8 p-6">
+      <h2 class="text-2xl font-bold mb-4">Connection Status</h2>
+      <div id="status" class="text-lg">
+        <span class="text-amber-600">⏳ Connecting...</span>
+      </div>
+    </div>
+
+    <!-- Test Appointment -->
+    <div class="card mb-8 p-6">
+      <h2 class="text-2xl font-bold mb-4">Test Appointment</h2>
+      <button onclick="createTestAppointment()" class="btn-primary mb-4">
+        Create Test Appointment
+      </button>
+      <div id="appointment-info" class="text-sm text-slate-600"></div>
+    </div>
+
+    <!-- Live Position -->
+    <div class="card mb-8 p-6 bg-gradient-to-br from-teal-50 to-blue-50">
+      <h2 class="text-2xl font-bold mb-4">Live Queue Position</h2>
+      <div class="text-center">
+        <div id="position" class="text-8xl font-bold text-teal-600 mb-4">--</div>
+        <p id="position-text" class="text-xl text-slate-700">Not subscribed</p>
+        <p id="eta" class="text-lg text-slate-600 mt-2">ETA: --</p>
+      </div>
+    </div>
+
+    <!-- Manual Controls -->
+    <div class="card mb-8 p-6">
+      <h2 class="text-2xl font-bold mb-4">Manual Controls</h2>
+      <div class="space-y-3">
+        <button onclick="updatePosition()" class="btn-secondary w-full">
+          Decrease Position (Simulate Queue Movement)
+        </button>
+        <button onclick="callPatient()" class="btn-primary w-full">
+          Call Patient (Simulate Doctor Calling)
+        </button>
+        <button onclick="completeAppointment()" class="btn-ghost w-full">
+          Complete Appointment
+        </button>
+      </div>
+    </div>
+
+    <!-- Event Log -->
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold mb-4">Event Log</h2>
+      <div id="log" class="bg-slate-900 text-green-400 p-4 rounded-lg font-mono text-sm h-64 overflow-y-auto">
+        <div>System initialized...</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+
+    let channel = null;
+    let testAppointmentId = null;
+    let currentPosition = 5;
+
+    // Log helper
+    function log(message, type = 'info') {
+      const logEl = document.getElementById('log');
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'success' ? 'text-green-400' : 
+                   type === 'error' ? 'text-red-400' : 
+                   type === 'warning' ? 'text-amber-400' : 'text-blue-400';
+      logEl.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // Create test appointment
+    window.createTestAppointment = async function() {
+      try {
+        log('Creating test appointment...', 'info');
+        
+        const { data, error } = await supabase
+          .from('appointments')
+          .insert({
+            patient_email: 'test@example.com',
+            patient_name: 'Test Patient',
+            doctor_name: 'Dr. Test',
+            department_name: 'General',
+            appointment_date: new Date().toISOString().split('T')[0],
+            appointment_time: '10:00:00',
+            token_number: 'TEST-' + Date.now(),
+            status: 'confirmed'
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        testAppointmentId = data.id;
+        log(`✅ Appointment created: ${data.token_number}`, 'success');
+        document.getElementById('appointment-info').innerHTML = `
+          <div class="bg-teal-50 p-4 rounded-lg">
+            <p><strong>ID:</strong> ${data.id}</p>
+            <p><strong>Token:</strong> ${data.token_number}</p>
+            <p><strong>Department:</strong> ${data.department_name}</p>
+          </div>
+        `;
+
+        // Subscribe to realtime
+        subscribeToQueue(data.id);
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    // Subscribe to queue updates
+    async function subscribeToQueue(appointmentId) {
+      try {
+        log('Subscribing to real-time updates...', 'info');
+
+        // Unsubscribe from previous
+        if (channel) {
+          await supabase.removeChannel(channel);
+        }
+
+        channel = supabase
+          .channel(`test-queue:${appointmentId}`)
+          .on('postgres_changes', 
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'queue_positions',
+              filter: `appointment_id=eq.${appointmentId}`
+            },
+            (payload) => {
+              log(`📊 Position update received!`, 'success');
+              handlePositionUpdate(payload.new);
+            }
+          )
+          .on('postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+              table: 'queue_positions',
+              filter: `appointment_id=eq.${appointmentId}`
+            },
+            (payload) => {
+              log(`📊 Queue position initialized!`, 'success');
+              handlePositionUpdate(payload.new);
+            }
+          )
+          .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+              log('✅ Subscribed to real-time updates!', 'success');
+              document.getElementById('status').innerHTML = 
+                '<span class="text-green-600">✅ Connected (Real-time Active)</span>';
+            } else if (status === 'CLOSED') {
+              log('⚠️ Connection closed', 'warning');
+              document.getElementById('status').innerHTML = 
+                '<span class="text-red-600">❌ Disconnected</span>';
+            }
+          });
+
+        // Initial position check
+        const { data } = await supabase
+          .from('queue_positions')
+          .select('*')
+          .eq('appointment_id', appointmentId)
+          .single();
+
+        if (data) {
+          handlePositionUpdate(data);
+        }
+
+      } catch (error) {
+        log(`❌ Subscribe error: ${error.message}`, 'error');
+        console.error(error);
+      }
+    }
+
+    // Handle position updates
+    function handlePositionUpdate(data) {
+      const { position, status, estimated_time } = data;
+      
+      document.getElementById('position').textContent = position;
+      document.getElementById('position-text').textContent = 
+        position === 0 ? "It's your turn! 🔔" :
+        position === 1 ? 'Next in line! 🚀' :
+        position === 2 ? 'Almost your turn!' :
+        `${position} patients ahead`;
+
+      if (estimated_time) {
+        const eta = Math.round((new Date(estimated_time) - new Date()) / 60000);
+        document.getElementById('eta').textContent = `ETA: ~${eta} min`;
+      }
+
+      log(`Position: ${position}, Status: ${status}`, 'info');
+      currentPosition = position;
+    }
+
+    // Manual update position
+    window.updatePosition = async function() {
+      if (!testAppointmentId) {
+        alert('Create a test appointment first!');
+        return;
+      }
+
+      try {
+        const newPosition = Math.max(0, currentPosition - 1);
+        log(`Updating position: ${currentPosition} → ${newPosition}`, 'warning');
+
+        const { error } = await supabase
+          .from('queue_positions')
+          .update({ 
+            position: newPosition, 
+            updated_at: new Date().toISOString() 
+          })
+          .eq('appointment_id', testAppointmentId);
+
+        if (error) throw error;
+
+        log(`✅ Position updated to ${newPosition}`, 'success');
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Call patient
+    window.callPatient = async function() {
+      if (!testAppointmentId) {
+        alert('Create a test appointment first!');
+        return;
+      }
+
+      try {
+        log('Calling patient...', 'warning');
+
+        const { error } = await supabase
+          .from('queue_positions')
+          .update({ 
+            position: 0,
+            status: 'called',
+            actual_call_time: new Date().toISOString(),
+            updated_at: new Date().toISOString() 
+          })
+          .eq('appointment_id', testAppointmentId);
+
+        if (error) throw error;
+
+        log('🔔 Patient called!', 'success');
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Complete appointment
+    window.completeAppointment = async function() {
+      if (!testAppointmentId) {
+        alert('Create a test appointment first!');
+        return;
+      }
+
+      try {
+        log('Completing appointment...', 'info');
+
+        const { error } = await supabase
+          .from('appointments')
+          .update({ status: 'completed' })
+          .eq('id', testAppointmentId);
+
+        if (error) throw error;
+
+        log('✅ Appointment completed!', 'success');
+      } catch (error) {
+        log(`❌ Error: ${error.message}`, 'error');
+      }
+    };
+
+    // Initialize
+    log('Ready! Click "Create Test Appointment" to start', 'info');
+  </script>
+</body>
+</html>

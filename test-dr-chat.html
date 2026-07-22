@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr.Chat Demo - MediQueue AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/output.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+  
+  <!-- Demo Header -->
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <!-- Title Section -->
+    <div class="text-center mb-16">
+      <div class="inline-block mb-6">
+        <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-purple-400 to-teal-500 flex items-center justify-center shadow-2xl">
+          <span class="text-white text-4xl font-bold">Dr</span>
+        </div>
+      </div>
+      
+      <h1 class="font-display text-6xl font-bold text-white mb-4">
+        Dr.Chat Demo
+      </h1>
+      <p class="text-2xl text-purple-200 mb-8">
+        AI Medical Assistant for MediQueue
+      </p>
+      
+      <div class="flex items-center justify-center gap-4 flex-wrap mb-8">
+        <span class="px-4 py-2 bg-purple-500/20 border border-purple-400/30 rounded-full text-purple-200 text-sm font-semibold">
+          ✨ Powered by NVIDIA AI
+        </span>
+        <span class="px-4 py-2 bg-teal-500/20 border border-teal-400/30 rounded-full text-teal-200 text-sm font-semibold">
+          🤖 Meta Llama 3.1 8B
+        </span>
+        <span class="px-4 py-2 bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-200 text-sm font-semibold">
+          💊 70+ Medicines Database
+        </span>
+      </div>
+      
+      <div class="flex items-center justify-center gap-6">
+        <button onclick="document.getElementById('chat-trigger').click()" class="btn-primary text-lg px-8 py-4 shadow-2xl">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          Start Chatting
+        </button>
+        <a href="./DR_CHAT_GUIDE.md" class="text-purple-200 hover:text-white transition-colors font-semibold">
+          Read Documentation →
+        </a>
+      </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="grid md:grid-cols-3 gap-8 mb-16">
+      <div class="card bg-white/5 backdrop-blur-sm border border-white/10 p-8 hover:border-purple-400/50 transition-all">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mb-6">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-white mb-3">Smart AI Assistant</h3>
+        <p class="text-purple-200">
+          Real-time responses powered by NVIDIA's advanced AI. Ask anything about appointments, medicines, or health.
+        </p>
+      </div>
+
+      <div class="card bg-white/5 backdrop-blur-sm border border-white/10 p-8 hover:border-teal-400/50 transition-all">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-6">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-white mb-3">Medicine Database</h3>
+        <p class="text-purple-200">
+          Complete information about 70+ common medicines including uses, dosages, and safety warnings.
+        </p>
+      </div>
+
+      <div class="card bg-white/5 backdrop-blur-sm border border-white/10 p-8 hover:border-blue-400/50 transition-all">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-6">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-white mb-3">24/7 Available</h3>
+        <p class="text-purple-200">
+          Always online and ready to help. Get instant answers anytime, anywhere, from any device.
+        </p>
+      </div>
+    </div>
+
+    <!-- Example Questions -->
+    <div class="card bg-white/5 backdrop-blur-sm border border-white/10 p-8 mb-16">
+      <h2 class="font-display text-3xl font-bold text-white mb-6 text-center">
+        Try These Example Questions
+      </h2>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="group">
+          <button onclick="askQuestion('How do I book an appointment?')" class="w-full text-left p-6 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border-2 border-purple-400/30 hover:border-purple-400/50 transition-all">
+            <div class="flex items-start gap-4">
+              <span class="text-3xl">📋</span>
+              <div>
+                <h4 class="font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">Booking Process</h4>
+                <p class="text-purple-200 text-sm">How do I book an appointment?</p>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="group">
+          <button onclick="askQuestion('What is Paracetamol used for?')" class="w-full text-left p-6 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border-2 border-teal-400/30 hover:border-teal-400/50 transition-all">
+            <div class="flex items-start gap-4">
+              <span class="text-3xl">💊</span>
+              <div>
+                <h4 class="font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">Medicine Info</h4>
+                <p class="text-purple-200 text-sm">What is Paracetamol used for?</p>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="group">
+          <button onclick="askQuestion('I have a headache, which department should I visit?')" class="w-full text-left p-6 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border-2 border-blue-400/30 hover:border-blue-400/50 transition-all">
+            <div class="flex items-start gap-4">
+              <span class="text-3xl">🏥</span>
+              <div>
+                <h4 class="font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">Department Selection</h4>
+                <p class="text-purple-200 text-sm">I have a headache, which department?</p>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="group">
+          <button onclick="askQuestion('Tell me about the real-time queue tracking feature')" class="w-full text-left p-6 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border-2 border-amber-400/30 hover:border-amber-400/50 transition-all">
+            <div class="flex items-start gap-4">
+              <span class="text-3xl">📊</span>
+              <div>
+                <h4 class="font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">Feature Info</h4>
+                <p class="text-purple-200 text-sm">Tell me about queue tracking</p>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Details -->
+    <div class="card bg-white/5 backdrop-blur-sm border border-white/10 p-8">
+      <h2 class="font-display text-3xl font-bold text-white mb-6 text-center">
+        Technical Specifications
+      </h2>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="font-bold text-purple-300 mb-4 text-lg">AI Model</h3>
+          <div class="space-y-3 text-purple-200">
+            <div class="flex items-center justify-between">
+              <span>Provider:</span>
+              <span class="font-mono text-white">NVIDIA NeMo</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Model:</span>
+              <span class="font-mono text-white">Llama 3.1 8B</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Parameters:</span>
+              <span class="font-mono text-white">8 Billion</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Context Length:</span>
+              <span class="font-mono text-white">8,192 tokens</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-teal-300 mb-4 text-lg">Knowledge Base</h3>
+          <div class="space-y-3 text-purple-200">
+            <div class="flex items-center justify-between">
+              <span>Medicines:</span>
+              <span class="font-mono text-white">70+</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Departments:</span>
+              <span class="font-mono text-white">7</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Pages Covered:</span>
+              <span class="font-mono text-white">6+</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Response Time:</span>
+              <span class="font-mono text-white">2-3 seconds</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 p-6 rounded-xl bg-purple-500/10 border border-purple-400/30">
+        <h4 class="font-bold text-purple-300 mb-3">Features</h4>
+        <div class="grid md:grid-cols-3 gap-4 text-sm text-purple-200">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Real-time responses</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Conversation history</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Emergency detection</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Typing indicators</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Message formatting</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>Context awareness</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dr.Chat Integration -->
+  <div id="dr-chat" class="fixed bottom-6 right-6 z-50">
+    <!-- Trigger Button -->
+    <button id="chat-trigger" class="btn-primary rounded-full w-16 h-16 shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group">
+      <div class="relative">
+        <svg class="w-7 h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+      </div>
+    </button>
+    
+    <!-- Chat Container -->
+    <div id="chat-container" class="hidden absolute bottom-20 right-0 w-[420px] card p-0 shadow-2xl max-h-[600px] flex flex-col">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-purple-500 via-purple-600 to-teal-500 p-4 rounded-t-xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center relative">
+              <span class="text-white text-lg font-bold">Dr</span>
+              <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-lg">Dr.Chat</h3>
+              <p class="text-xs text-white/90 flex items-center gap-1">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                AI Medical Assistant • Online
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="clearDrChat()" class="text-white hover:bg-white/20 rounded-lg p-2 transition-colors" title="Clear chat">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+            <button id="close-chat" class="text-white hover:bg-white/20 rounded-lg p-2 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Messages Area -->
+      <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gradient-to-br from-slate-50 to-blue-50/30 min-h-[400px] max-h-[450px]">
+        <!-- Messages will be added here dynamically -->
+      </div>
+      
+      <!-- Input Area -->
+      <div class="p-4 bg-white border-t border-slate-200 rounded-b-xl">
+        <form id="chat-form" class="flex gap-2">
+          <input 
+            type="text" 
+            id="chat-input" 
+            placeholder="Ask me about appointments, medicines, or health..."
+            class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none text-sm"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" class="btn-primary px-5 rounded-xl flex items-center gap-2 hover:shadow-lg transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          </button>
+        </form>
+        <p class="text-xs text-slate-400 mt-2 text-center">
+          Powered by NVIDIA AI • Always consult a doctor for medical advice
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/dr-chat.js"></script>
+  
+  <script>
+    // Helper function to ask questions from example buttons
+    function askQuestion(question) {
+      // Open chat if closed
+      const chatContainer = document.getElementById('chat-container');
+      if (chatContainer.classList.contains('hidden')) {
+        document.getElementById('chat-trigger').click();
+      }
+      
+      // Wait for chat to open, then insert question
+      setTimeout(() => {
+        const input = document.getElementById('chat-input');
+        if (input) {
+          input.value = question;
+          input.focus();
+          
+          // Auto-submit after short delay
+          setTimeout(() => {
+            const form = document.getElementById('chat-form');
+            if (form) {
+              form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+          }, 300);
+        }
+      }, 400);
+    }
+  </script>
+</body>
+</html>

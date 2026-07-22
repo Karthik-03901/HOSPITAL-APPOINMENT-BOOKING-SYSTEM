@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waitlist Status — MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-blue-50/20 font-body antialiased">
+  
+  <!-- Header -->
+  <header class="glass-white border-b border-slate-200/50 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../index.html" class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 font-display text-lg font-bold text-white shadow-soft">M</div>
+          <span class="font-display text-xl font-bold text-navy-900">MediQueue</span>
+        </a>
+        <a href="../index.html" class="btn-secondary">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Home
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    
+    <!-- Live Indicator -->
+    <div class="flex items-center justify-center gap-2 mb-8">
+      <span class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+      </span>
+      <span class="text-sm font-semibold text-amber-600">LIVE WAITLIST</span>
+    </div>
+
+    <!-- Status Card -->
+    <div id="status-card" class="card-glass p-12 text-center mb-8">
+      <!-- Loading State -->
+      <div id="loading-state">
+        <div class="animate-pulse">
+          <div class="h-24 w-24 bg-slate-200 rounded-full mx-auto mb-4"></div>
+          <div class="h-6 bg-slate-200 rounded w-48 mx-auto mb-2"></div>
+          <div class="h-4 bg-slate-200 rounded w-64 mx-auto"></div>
+        </div>
+      </div>
+
+      <!-- Waiting State -->
+      <div id="waiting-state" class="hidden">
+        <div class="text-8xl mb-4">⏳</div>
+        <h1 class="font-display text-3xl font-bold text-navy-900 mb-2">You're on the Waitlist</h1>
+        <div class="mb-6">
+          <p class="text-slate-600 text-lg mb-1">Your position:</p>
+          <div id="position-display" class="text-6xl font-bold text-amber-600 font-mono">
+            --
+          </div>
+        </div>
+        <p class="text-slate-600 max-w-md mx-auto">
+          We're monitoring for cancellations. You'll be notified instantly via SMS and email when a slot opens!
+        </p>
+      </div>
+
+      <!-- Offered State -->
+      <div id="offered-state" class="hidden">
+        <div class="text-8xl mb-4 animate-bounce">🎉</div>
+        <h1 class="font-display text-3xl font-bold text-green-600 mb-2">Slot Available!</h1>
+        <p class="text-lg text-slate-600 mb-6">
+          A slot just opened up! Confirm now to book it.
+        </p>
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-lg p-4 mb-6 inline-block">
+          <p class="text-sm text-amber-900 font-semibold">⏰ Offer expires in:</p>
+          <div id="countdown-timer" class="text-3xl font-bold text-amber-700 font-mono">
+            15:00
+          </div>
+        </div>
+        <button id="confirm-btn" onclick="confirmWaitlistOffer()" class="btn-primary btn-lg">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          Confirm Appointment Now
+        </button>
+      </div>
+
+      <!-- Expired State -->
+      <div id="expired-state" class="hidden">
+        <div class="text-8xl mb-4">😔</div>
+        <h1 class="font-display text-3xl font-bold text-slate-600 mb-2">Offer Expired</h1>
+        <p class="text-slate-600 mb-6">
+          The 15-minute window has passed. The slot was offered to the next person in line.
+        </p>
+        <button onclick="window.location.href='./join-waitlist.html'" class="btn-secondary">
+          Join Waitlist Again
+        </button>
+      </div>
+
+      <!-- Accepted State -->
+      <div id="accepted-state" class="hidden">
+        <div class="text-8xl mb-4">✅</div>
+        <h1 class="font-display text-3xl font-bold text-green-600 mb-2">Appointment Confirmed!</h1>
+        <p class="text-slate-600 mb-6">
+          Your appointment has been successfully booked from the waitlist.
+        </p>
+        <button id="view-appointment-btn" class="btn-primary">
+          View Appointment Details
+        </button>
+      </div>
+    </div>
+
+    <!-- Appointment Details -->
+    <div id="details-card" class="card p-6 mb-8 hidden">
+      <h3 class="font-display text-lg font-bold text-navy-900 mb-4">Waitlist Details</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Patient Name</span>
+          <span class="font-semibold text-navy-900" id="detail-patient">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Doctor</span>
+          <span class="font-semibold text-navy-900" id="detail-doctor">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Preferred Date</span>
+          <span class="font-semibold text-navy-900" id="detail-date">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Time Range</span>
+          <span class="font-semibold text-navy-900" id="detail-time">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Joined At</span>
+          <span class="font-semibold text-navy-900" id="detail-joined">---</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Notes -->
+    <div class="card p-6 bg-blue-50 border border-blue-200">
+      <h4 class="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        What Happens Next?
+      </h4>
+      <ul class="text-sm text-blue-800 space-y-2">
+        <li class="flex items-start gap-2">
+          <span class="text-blue-600">📱</span>
+          <span>You'll receive SMS + Email notification when a slot opens</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-600">⏱️</span>
+          <span>You have 15 minutes to confirm the slot</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-600">🔄</span>
+          <span>If you don't confirm, the slot goes to the next person</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-600">📊</span>
+          <span>Keep this page open for live position updates</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <script type="module" src="../js/pages/waitlist-status.js"></script>
+</body>
+</html>

@@ -20,6 +20,9 @@
   }
 }
 
+/* Import enhanced UI components */
+@import './enhanced-ui.css';
+
 /* =====================================================
    GLASSMORPHIC COMPONENTS
    ===================================================== */
@@ -1037,5 +1040,78 @@
   .print-full-width {
     width: 100% !important;
     max-width: none !important;
+  }
+}
+
+/* Navigation Links */
+.nav-link {
+  @apply flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors relative;
+}
+
+.nav-link.active {
+  @apply text-teal-600;
+}
+
+.nav-link.active::after {
+  content: '';
+  @apply absolute -bottom-6 left-0 right-0 h-0.5 bg-teal-600;
+}
+
+/* Testimonials Carousel */
+.testimonials-scroll-container {
+  @apply relative w-full overflow-hidden;
+  height: 320px;
+}
+
+.testimonials-track {
+  @apply flex gap-6 absolute;
+  animation: scroll-testimonials 80s linear infinite;
+  will-change: transform;
+}
+
+@keyframes scroll-testimonials {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.testimonials-track:hover {
+  animation-play-state: paused;
+}
+
+.testimonial-card {
+  @apply flex-shrink-0 w-96 card p-6 bg-white border border-slate-200;
+  min-height: 280px;
+}
+
+/* Message Box Animations */
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dr.Chat Test - Fixed Version</title>
+  <link rel="stylesheet" href="./css/output.css" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .test-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .test-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s;
+      margin: 4px;
+    }
+    
+    .test-button:hover {
+      transform: translateY(-2px);
+    }
+    
+    .success {
+      color: #10b981;
+      font-weight: bold;
+    }
+    
+    .code {
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="test-card text-center">
+      <h1 class="text-4xl font-bold mb-4">✅ Dr.Chat - FIXED VERSION</h1>
+      <p class="text-xl text-gray-600 mb-4">Test all the improvements!</p>
+      <div class="flex items-center justify-center gap-4 flex-wrap">
+        <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+          ✅ Different Responses
+        </span>
+        <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+          ✅ Smooth Scrolling
+        </span>
+        <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold">
+          ✅ 10+ Categories
+        </span>
+      </div>
+    </div>
+
+    <!-- Test Instructions -->
+    <div class="test-card">
+      <h2 class="text-2xl font-bold mb-4">📝 How to Test</h2>
+      <ol class="list-decimal list-inside space-y-2 text-gray-700">
+        <li>Click the <strong>purple chat button</strong> in the bottom-right corner</li>
+        <li>Click any <strong>test button</strong> below to auto-send questions</li>
+        <li>Verify you get <strong>different responses</strong> for each question</li>
+        <li>Send <strong>10+ messages</strong> and verify scrolling works</li>
+        <li>Scroll up manually, then send new message - should auto-scroll down</li>
+      </ol>
+    </div>
+
+    <!-- Quick Tests -->
+    <div class="test-card">
+      <h2 class="text-2xl font-bold mb-4">🧪 Quick Tests</h2>
+      <p class="text-gray-600 mb-4">Click buttons to auto-send test questions:</p>
+      
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <h3 class="font-bold mb-2">Basic Questions:</h3>
+          <button class="test-button w-full" onclick="askQuestion('Hello')">👋 Hello</button>
+          <button class="test-button w-full" onclick="askQuestion('What is your name?')">🤖 Your Name</button>
+          <button class="test-button w-full" onclick="askQuestion('Thank you')">🙏 Thank You</button>
+        </div>
+        
+        <div>
+          <h3 class="font-bold mb-2">Booking & Services:</h3>
+          <button class="test-button w-full" onclick="askQuestion('How do I book an appointment?')">📋 Book Appointment</button>
+          <button class="test-button w-full" onclick="askQuestion('Which departments do you have?')">🏥 Departments</button>
+          <button class="test-button w-full" onclick="askQuestion('How does queue tracking work?')">📊 Queue Tracking</button>
+        </div>
+        
+        <div>
+          <h3 class="font-bold mb-2">Medicine Information:</h3>
+          <button class="test-button w-full" onclick="askQuestion('What is Paracetamol?')">💊 Paracetamol</button>
+          <button class="test-button w-full" onclick="askQuestion('What is Ibuprofen?')">💊 Ibuprofen</button>
+          <button class="test-button w-full" onclick="askQuestion('Tell me about medicines')">💊 General Medicines</button>
+        </div>
+        
+        <div>
+          <h3 class="font-bold mb-2">Symptoms & Emergency:</h3>
+          <button class="test-button w-full" onclick="askQuestion('I have a headache')">🤕 Headache</button>
+          <button class="test-button w-full" onclick="askQuestion('I have a fever')">🌡️ Fever</button>
+          <button class="test-button w-full" onclick="askQuestion('I have chest pain')">🚨 Emergency</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Scrolling -->
+    <div class="test-card">
+      <h2 class="text-2xl font-bold mb-4">📜 Test Scrolling</h2>
+      <p class="text-gray-600 mb-4">Click button to send 15 messages quickly:</p>
+      <button class="test-button" onclick="testScrolling()">
+        🔄 Send 15 Messages (Test Scroll)
+      </button>
+      <p class="text-sm text-gray-500 mt-2">
+        This will test if auto-scrolling works with many messages
+      </p>
+    </div>
+
+    <!-- Expected Results -->
+    <div class="test-card">
+      <h2 class="text-2xl font-bold mb-4">✅ Expected Results</h2>
+      <div class="space-y-4">
+        <div>
+          <h3 class="font-bold text-green-600 mb-2">✅ Different Responses</h3>
+          <ul class="list-disc list-inside text-gray-700 space-y-1">
+            <li><span class="code">Hello</span> → Greeting with help menu</li>
+            <li><span class="code">Book appointment</span> → 6-step booking guide</li>
+            <li><span class="code">Paracetamol</span> → Detailed medicine info</li>
+            <li><span class="code">Headache</span> → Department recommendation</li>
+            <li><span class="code">Chest pain</span> → Emergency alert</li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-bold text-blue-600 mb-2">✅ Smooth Scrolling</h3>
+          <ul class="list-disc list-inside text-gray-700 space-y-1">
+            <li>Chat auto-scrolls to bottom after each message</li>
+            <li>Smooth animation (not instant jump)</li>
+            <li>Can scroll up to see old messages</li>
+            <li>New messages auto-scroll back to bottom</li>
+            <li>Works with 10+ messages</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="test-card text-center">
+      <p class="text-2xl mb-4">
+        <span class="success">✅ All Issues Fixed!</span>
+      </p>
+      <p class="text-gray-600">
+        Dr.Chat now provides different responses for different questions<br>
+        and scrolling works smoothly with any number of messages.
+      </p>
+    </div>
+  </div>
+
+  <!-- Dr.Chat Integration -->
+  <div id="dr-chat" class="fixed bottom-6 right-6 z-50">
+    <!-- Trigger Button -->
+    <button id="chat-trigger" class="btn-primary rounded-full w-16 h-16 shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <div class="relative">
+        <svg class="w-7 h-7 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+        </svg>
+        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+      </div>
+    </button>
+    
+    <!-- Chat Container -->
+    <div id="chat-container" class="hidden absolute bottom-20 right-0 w-[420px] card p-0 shadow-2xl max-h-[600px] flex flex-col">
+      <!-- Header -->
+      <div class="p-4 rounded-t-xl" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center relative">
+              <span class="text-white text-lg font-bold">Dr</span>
+              <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+            </div>
+            <div>
+              <h3 class="font-bold text-white text-lg">Dr.Chat</h3>
+              <p class="text-xs text-white/90 flex items-center gap-1">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                Medical Assistant • Online
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="clearDrChat()" class="text-white hover:bg-white/20 rounded-lg p-2 transition-colors" title="Clear chat">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+            <button id="close-chat" class="text-white hover:bg-white/20 rounded-lg p-2 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Messages Area -->
+      <div id="chat-messages" class="flex-1 p-4 overflow-y-auto bg-gradient-to-br from-slate-50 to-blue-50/30 min-h-[400px] max-h-[450px]">
+        <!-- Messages will be added here dynamically -->
+      </div>
+      
+      <!-- Input Area -->
+      <div class="p-4 bg-white border-t border-slate-200 rounded-b-xl">
+        <form id="chat-form" class="flex gap-2">
+          <input 
+            type="text" 
+            id="chat-input" 
+            placeholder="Ask me anything..."
+            class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all outline-none text-sm"
+            required
+            autocomplete="off"
+          />
+          <button type="submit" class="px-5 rounded-xl flex items-center gap-2 hover:shadow-lg transition-all text-white font-semibold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          </button>
+        </form>
+        <p class="text-xs text-slate-400 mt-2 text-center">
+          Powered by Smart Offline Mode • Always consult a doctor
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/dr-chat.js"></script>
+  
+  <script>
+    // Helper function to ask questions from test buttons
+    function askQuestion(question) {
+      // Open chat if closed
+      const chatContainer = document.getElementById('chat-container');
+      if (chatContainer.classList.contains('hidden')) {
+        document.getElementById('chat-trigger').click();
+      }
+      
+      // Wait for chat to open, then insert question
+      setTimeout(() => {
+        const input = document.getElementById('chat-input');
+        if (input) {
+          input.value = question;
+          input.focus();
+          
+          // Auto-submit after short delay
+          setTimeout(() => {
+            const form = document.getElementById('chat-form');
+            if (form) {
+              form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+            }
+          }, 300);
+        }
+      }, 400);
+    }
+    
+    // Test scrolling with many messages
+    async function testScrolling() {
+      const questions = [
+        'Hello',
+        'What is your name?',
+        'How do I book?',
+        'What is Paracetamol?',
+        'I have a headache',
+        'I have a fever',
+        'Tell me about departments',
+        'How does queue tracking work?',
+        'What is Ibuprofen?',
+        'How do I pay?',
+        'What are your hours?',
+        'Do you accept insurance?',
+        'Can I reschedule?',
+        'Where are you located?',
+        'Thank you'
+      ];
+      
+      // Open chat first
+      const chatContainer = document.getElementById('chat-container');
+      if (chatContainer.classList.contains('hidden')) {
+        document.getElementById('chat-trigger').click();
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      // Send questions one by one
+      for (const question of questions) {
+        askQuestion(question);
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds between messages
+      }
+    }
+  </script>
+</body>
+</html>

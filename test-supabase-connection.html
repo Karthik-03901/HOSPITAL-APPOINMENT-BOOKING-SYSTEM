@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Connection Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #2d3748;
+    }
+
+    .subtitle {
+      color: #718096;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .test-section {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #cbd5e0;
+    }
+
+    .test-section.success {
+      border-left-color: #48bb78;
+      background: #f0fff4;
+    }
+
+    .test-section.error {
+      border-left-color: #f56565;
+      background: #fff5f5;
+    }
+
+    .test-section.testing {
+      border-left-color: #ed8936;
+      background: #fffaf0;
+    }
+
+    .test-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .test-result {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #4a5568;
+    }
+
+    .test-result pre {
+      background: #2d3748;
+      color: #68d391;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 10px;
+      text-transform: uppercase;
+    }
+
+    .status-badge.success {
+      background: #48bb78;
+      color: white;
+    }
+
+    .status-badge.error {
+      background: #f56565;
+      color: white;
+    }
+
+    .status-badge.testing {
+      background: #ed8936;
+      color: white;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .config-info {
+      background: #edf2f7;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 12px;
+    }
+
+    .config-info strong {
+      color: #2d3748;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Supabase Connection Test</h1>
+    <p class="subtitle">Verify your database connection and real-time setup</p>
+
+    <button id="runTestBtn" onclick="runAllTests()">
+      Run All Tests
+    </button>
+
+    <div style="margin-top: 30px;">
+      <div id="test1" class="test-section">
+        <div class="test-title">
+          1. Configuration Check
+          <span class="status-badge" id="status1">Pending</span>
+        </div>
+        <div class="test-result" id="result1">Click "Run All Tests" to start</div>
+      </div>
+
+      <div id="test2" class="test-section">
+        <div class="test-title">
+          2. Database Connection
+          <span class="status-badge" id="status2">Pending</span>
+        </div>
+        <div class="test-result" id="result2">Waiting...</div>
+      </div>
+
+      <div id="test3" class="test-section">
+        <div class="test-title">
+          3. Tables Verification
+          <span class="status-badge" id="status3">Pending</span>
+        </div>
+        <div class="test-result" id="result3">Waiting...</div>
+      </div>
+
+      <div id="test4" class="test-section">
+        <div class="test-title">
+          4. Realtime WebSocket
+          <span class="status-badge" id="status4">Pending</span>
+        </div>
+        <div class="test-result" id="result4">Waiting...</div>
+      </div>
+    </div>
+
+    <div class="config-info">
+      <strong>📍 Configuration Location:</strong><br>
+      js/config.js - Edit this file if credentials are incorrect
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from './js/config.js';
+
+    window.runAllTests = async function() {
+      const btn = document.getElementById('runTestBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Running Tests...';
+
+      await test1_config();
+      await test2_connection();
+      await test3_tables();
+      await test4_realtime();
+
+      btn.disabled = false;
+      btn.innerHTML = 'Run Tests Again';
+    };
+
+    // Test 1: Configuration Check
+    async function test1_config() {
+      setStatus('test1', 'testing', 'Testing');
+      
+      await sleep(500);
+
+      const hasUrl = SUPABASE_URL && SUPABASE_URL !== '';
+      const hasKey = SUPABASE_ANON_KEY && SUPABASE_ANON_KEY !== '';
+      const urlValid = SUPABASE_URL.startsWith('https://');
+      const keyValid = SUPABASE_ANON_KEY.length > 20;
+
+      if (hasUrl && hasKey && urlValid && keyValid) {
+        setStatus('test1', 'success', 'Passed');
+        setResult('test1', `
+          ✅ Configuration looks good!<br><br>
+          <strong>URL:</strong> ${SUPABASE_URL}<br>
+          <strong>Key:</strong> ${SUPABASE_ANON_KEY.substring(0, 20)}...<br>
+          <strong>Key Length:</strong> ${SUPABASE_ANON_KEY.length} characters
+        `);
+      } else {
+        setStatus('test1', 'error', 'Failed');
+        setResult('test1', `
+          ❌ Configuration issue detected!<br><br>
+          <strong>URL Present:</strong> ${hasUrl ? '✓' : '✗'}<br>
+          <strong>URL Valid:</strong> ${urlValid ? '✓' : '✗'}<br>
+          <strong>Key Present:</strong> ${hasKey ? '✓' : '✗'}<br>
+          <strong>Key Valid:</strong> ${keyValid ? '✓' : '✗'}<br><br>
+          <em>Check js/config.js and update credentials</em>
+        `);
+      }
+    }
+
+    // Test 2: Database Connection
+    async function test2_connection() {
+      setStatus('test2', 'testing', 'Testing');
+      
+      try {
+        const { data, error } = await supabase
+          .from('queue_positions')
+          .select('id')
+          .limit(1);
+
+        if (error) throw error;
+
+        setStatus('test2', 'success', 'Passed');
+        setResult('test2', `
+          ✅ Successfully connected to Supabase!<br><br>
+          <strong>Records found:</strong> ${data.length}<br>
+          <strong>Response time:</strong> Fast ⚡
+          <pre>${JSON.stringify({ data, error: null }, null, 2)}</pre>
+        `);
+      } catch (error) {
+        setStatus('test2', 'error', 'Failed');
+        setResult('test2', `
+          ❌ Connection failed!<br><br>
+          <strong>Error:</strong> ${error.message}<br><br>
+          <strong>Possible causes:</strong><br>
+          • Wrong credentials in js/config.js<br>
+          • Network issue<br>
+          • Table doesn't exist yet<br><br>
+          <pre>${JSON.stringify(error, null, 2)}</pre>
+        `);
+      }
+    }
+
+    // Test 3: Tables Verification
+    async function test3_tables() {
+      setStatus('test3', 'testing', 'Testing');
+
+      try {
+        const tables = ['queue_positions', 'notifications', 'appointments'];
+        const results = {};
+
+        for (const table of tables) {
+          try {
+            const { count, error } = await supabase
+              .from(table)
+              .select('*', { count: 'exact', head: true });
+            
+            results[table] = error ? '❌' : `✅ (${count} records)`;
+          } catch (e) {
+            results[table] = '❌ Not found';
+          }
+        }
+
+        const allExist = Object.values(results).every(r => r.startsWith('✅'));
+
+        if (allExist) {
+          setStatus('test3', 'success', 'Passed');
+          setResult('test3', `
+            ✅ All required tables exist!<br><br>
+            ${Object.entries(results).map(([k, v]) => `<strong>${k}:</strong> ${v}`).join('<br>')}
+          `);
+        } else {
+          setStatus('test3', 'error', 'Failed');
+          setResult('test3', `
+            ⚠️ Some tables are missing!<br><br>
+            ${Object.entries(results).map(([k, v]) => `<strong>${k}:</strong> ${v}`).join('<br>')}<br><br>
+            <em>Run supabase/realtime-schema-simple.sql in Supabase Dashboard</em>
+          `);
+        }
+      } catch (error) {
+        setStatus('test3', 'error', 'Failed');
+        setResult('test3', `
+          ❌ Could not verify tables<br><br>
+          <strong>Error:</strong> ${error.message}
+        `);
+      }
+    }
+
+    // Test 4: Realtime WebSocket
+    async function test4_realtime() {
+      setStatus('test4', 'testing', 'Testing');
+
+      return new Promise((resolve) => {
+        let channel;
+        const timeout = setTimeout(() => {
+          if (channel) supabase.removeChannel(channel);
+          setStatus('test4', 'error', 'Failed');
+          setResult('test4', `
+            ❌ WebSocket connection timeout!<br><br>
+            <strong>Possible causes:</strong><br>
+            • Realtime not enabled in Supabase<br>
+            • Network firewall blocking WebSocket<br>
+            • Wrong configuration<br><br>
+            <em>Run: ALTER PUBLICATION supabase_realtime ADD TABLE queue_positions;</em>
+          `);
+          resolve();
+        }, 10000);
+
+        channel = supabase
+          .channel('test-connection')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'queue_positions'
+            },
+            (payload) => {
+              console.log('Realtime update:', payload);
+            }
+          )
+          .subscribe((status) => {
+            console.log('Subscription status:', status);
+            
+            if (status === 'SUBSCRIBED') {
+              clearTimeout(timeout);
+              supabase.removeChannel(channel);
+              
+              setStatus('test4', 'success', 'Passed');
+              setResult('test4', `
+                ✅ Realtime WebSocket connected!<br><br>
+                <strong>Status:</strong> ${status}<br>
+                <strong>Channel:</strong> test-connection<br>
+                <strong>Table:</strong> queue_positions<br><br>
+                <em>You're ready for live updates! 🎉</em>
+              `);
+              resolve();
+            } else if (status === 'CHANNEL_ERROR') {
+              clearTimeout(timeout);
+              supabase.removeChannel(channel);
+              
+              setStatus('test4', 'error', 'Failed');
+              setResult('test4', `
+                ❌ WebSocket channel error!<br><br>
+                <strong>Status:</strong> ${status}<br><br>
+                Check Supabase Dashboard → Logs → Realtime
+              `);
+              resolve();
+            }
+          });
+      });
+    }
+
+    // Helper functions
+    function setStatus(testId, type, text) {
+      const el = document.getElementById(`status${testId.slice(-1)}`);
+      el.className = `status-badge ${type}`;
+      el.textContent = text;
+      
+      const section = document.getElementById(testId);
+      section.className = `test-section ${type}`;
+    }
+
+    function setResult(testId, html) {
+      const el = document.getElementById(`result${testId.slice(-1)}`);
+      el.innerHTML = html;
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  </script>
+</body>
+</html>

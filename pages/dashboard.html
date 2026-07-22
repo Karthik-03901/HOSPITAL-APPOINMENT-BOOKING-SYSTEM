@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - MediQueue</title>
+  <link rel="stylesheet" href="../css/output.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50/20">
+  
+  <div class="min-h-screen flex items-center justify-center px-6">
+    <div class="text-center">
+      <div class="inline-flex w-16 h-16 items-center justify-center rounded-2xl bg-teal-100 mb-6">
+        <svg class="w-8 h-8 text-teal-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+      </div>
+      <h1 class="font-display text-3xl font-bold text-navy-900 mb-3">Loading Dashboard...</h1>
+      <p class="text-slate-600">Redirecting you to the right place</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from '../js/supabaseClient.js';
+
+    // DEMO USERS
+    const DEMO_USERS = {
+      admin: 'karthiksaravanavel18@gmail.com',
+      doctor: 'vel759894@gmail.com'
+    };
+
+    async function routeToDashboard() {
+      try {
+        // Get current session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+          // No session, redirect to login
+          window.location.href = '../pages/login.html';
+          return;
+        }
+
+        const userEmail = session.user.email;
+
+        // Route based on user email
+        if (userEmail === DEMO_USERS.admin) {
+          // Admin dashboard
+          window.location.href = '../pages/dashboard-admin.html';
+        } else if (userEmail === DEMO_USERS.doctor) {
+          // Doctor dashboard
+          window.location.href = '../pages/dashboard-doctor.html';
+        } else {
+          // Patient dashboard (home page with booking)
+          window.location.href = '../index.html';
+        }
+      } catch (error) {
+        console.error('Dashboard routing error:', error);
+        // On error, redirect to login
+        window.location.href = '../pages/login.html';
+      }
+    }
+
+    // Run on page load
+    routeToDashboard();
+  </script>
+</body>
+</html>

@@ -13,6 +13,7 @@ import {
 } from '../data/mockData.js';
 import { toast } from '../components/Toast.js';
 import { formatDate, formatTime, formatCurrency, getInitials } from '../utils/formatters.js';
+import { supabase } from '../supabaseClient.js';
 
 // State management
 let currentStep = 1;
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initBookingSystem() {
   setupDateInput();
   loadDepartments();
+  setupScrollNavbar();
   
   // Make functions globally available for onclick handlers
   window.previousStep = previousStep;
@@ -368,7 +370,7 @@ function generateTokenNumber() {
 /**
  * Confirm and submit booking
  */
-window.confirmBooking = function() {
+window.confirmBooking = async function() {
   const reasonInput = document.getElementById('reason');
   const medicalHistoryInput = document.getElementById('medical-history');
   
@@ -397,10 +399,9 @@ window.confirmBooking = function() {
     Processing...
   `;
   
-  // Simulate API call
-  setTimeout(() => {
-    // Store in localStorage (would be Supabase in production)
-    saveBooking(bookingData);
+  try {
+    // Save to Supabase
+    const appointmentId = await saveBooking(bookingData);
     
     // Reset button
     btn.disabled = false;
@@ -409,21 +410,135 @@ window.confirmBooking = function() {
     // Show success modal
     showSuccessModal();
     
-    toast.success('Appointment booked successfully! Check your email for confirmation.');
-  }, 1500);
+    toast.success('Appointment booked successfully! Redirecting to queue status...');
+    
+    // Redirect to queue status page after 2 seconds
+    setTimeout(() => {
+      window.location.href = `./queue-status.html?id=${appointmentId}`;
+    }, 2000);
+    
+  } catch (error) {
+    console.error('Booking failed:', error);
+    console.error('Error details:', error.message);
+    console.error('Error code:', error.code);
+    
+    // Reset button
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    
+    // Show more detailed error
+    if (error.message) {
+      toast.error(`Failed to book: ${error.message}`);
+    } else {
+      toast.error('Failed to book appointment. Please try again.');
+    }
+  }
 };
 
 /**
- * Save booking to localStorage (mock database)
+ * Save booking to Supabase database using RPC
  */
-function saveBooking(booking) {
+async function saveBooking(booking) {
   try {
+    console.log('📝 Attempting to save booking:', booking);
+    
+    // Parse and format the date and time properly
+    let appointmentDate = booking.date; // Should be YYYY-MM-DD format
+    let appointmentTime = booking.time; // Should be HH:MM format
+    
+    // Validate date format
+    if (!appointmentDate || !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate)) {
+      throw new Error('Invalid date format. Expected YYYY-MM-DD');
+    }
+    
+    // Remove seconds if present (RPC expects TIME format HH:MM)
+    if (appointmentTime && appointmentTime.includes(':')) {
+      const parts = appointmentTime.split(':');
+      appointmentTime = `${parts[0]}:${parts[1]}`;
+    }
+    
+    // Validate time format
+    if (!appointmentTime || !/^\d{2}:\d{2}$/.test(appointmentTime)) {
+      throw new Error('Invalid time format. Expected HH:MM');
+    }
+    
+    console.log('📅 Formatted date:', appointmentDate);
+    console.log('⏰ Formatted time:', appointmentTime);
+    console.log('🎫 Token:', booking.token);
+    console.log('🩺 Doctor:', booking.doctor?.name);
+    console.log('🏥 Department:', booking.department?.name);
+    
+    // Get user email from localStorage or use guest
+    const patientEmail = localStorage.getItem('userEmail') || `guest_${Date.now()}@mediqueue.temp`;
+    const patientName = localStorage.getItem('userName') || 'Guest Patient';
+    
+    // Call RPC function to create appointment (atomic - prevents double booking)
+    // Pass doctor_name and department_name instead of IDs
+    const { data, error } = await supabase
+      .rpc('create_appointment_atomic', {
+        p_appointment_date: appointmentDate,
+        p_appointment_time: appointmentTime,
+        p_token_number: booking.token,
+        p_reason: booking.reason || 'General consultation',
+        p_patient_id: null,
+        p_patient_email: patientEmail,
+        p_patient_name: patientName,
+        p_doctor_id: null, // Use null instead of mock doctor ID
+        p_doctor_name: booking.doctor?.name || 'General Physician',
+        p_department_id: null, // Use null instead of mock department ID
+        p_department_name: booking.department?.name || 'General'
+      });
+
+    if (error) {
+      console.error('❌ RPC error:', error);
+      throw error;
+    }
+
+    console.log('✅ RPC response:', data);
+    
+    // Check if RPC call was successful
+    if (!data.success) {
+      // Check if slot was taken by someone else
+      if (data.slot_taken) {
+        toast.error('⚠️ This slot was just booked by another patient! Please choose another time.');
+        // Refresh available slots
+        setTimeout(() => {
+          loadTimeSlots();
+        }, 1000);
+        throw new Error(data.error || 'Slot no longer available');
+      }
+      throw new Error(data.error || data.message || 'Failed to create appointment');
+    }
+
+    console.log('✅ Appointment created:', data.appointment_id);
+    console.log('📊 Queue position:', data.queue_position);
+    
+    // Store appointment ID in localStorage for queue tracking
+    localStorage.setItem('currentAppointmentId', data.appointment_id);
+    
+    // Also keep a copy in localStorage as backup
+    let bookings = JSON.parse(localStorage.getItem('appointments') || '[]');
+    bookings.push({ 
+      ...booking, 
+      id: data.appointment_id,
+      queuePosition: data.queue_position
+    });
+    localStorage.setItem('appointments', JSON.stringify(bookings));
+    
+    return data.appointment_id;
+    
+  } catch (error) {
+    console.error('❌ Failed to save booking:', error);
+    console.error('❌ Error message:', error.message);
+    
+    // Fallback to localStorage only
+    console.log('⚠️ Falling back to localStorage');
+    localStorage.setItem('currentAppointmentId', booking.token);
     let bookings = JSON.parse(localStorage.getItem('appointments') || '[]');
     bookings.push(booking);
     localStorage.setItem('appointments', JSON.stringify(bookings));
-    console.log('Booking saved:', booking);
-  } catch (error) {
-    console.error('Failed to save booking:', error);
+    
+    throw error;
   }
 }
 
@@ -547,4 +662,46 @@ function navigateToStep(step) {
   
   // Smooth scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+/**
+ * Setup smart navbar that hides on scroll down, shows on scroll up
+ */
+function setupScrollNavbar() {
+  const navbar = document.getElementById('navbar');
+  if (!navbar) return;
+  
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+  
+  const updateNavbar = () => {
+    const currentScrollY = window.scrollY;
+    
+    // If scrolled down more than 100px
+    if (currentScrollY > 100) {
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down - hide navbar
+        navbar.style.transform = 'translateY(-100%)';
+      } else {
+        // Scrolling up - show navbar
+        navbar.style.transform = 'translateY(0)';
+      }
+    } else {
+      // At top of page - always show
+      navbar.style.transform = 'translateY(0)';
+    }
+    
+    lastScrollY = currentScrollY;
+    ticking = false;
+  };
+  
+  const requestTick = () => {
+    if (!ticking) {
+      requestAnimationFrame(updateNavbar);
+      ticking = true;
+    }
+  };
+  
+  window.addEventListener('scroll', requestTick, { passive: true });
 }

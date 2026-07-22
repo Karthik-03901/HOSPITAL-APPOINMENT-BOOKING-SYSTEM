@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile - MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏥</text></svg>" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-blue-50/20">
+  
+  <!-- Navigation -->
+  <nav class="relative z-50 glass-white border-b border-slate-200/50 sticky top-0">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <div class="flex items-center gap-3">
+          <a href="../index.html" class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 font-display text-lg font-bold text-white shadow-soft">M</div>
+            <span class="font-display text-xl font-bold text-navy-900">MediQueue</span>
+          </a>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-8">
+          <a href="../index.html" class="nav-link">Home</a>
+          <a href="./profile.html" class="nav-link active">Profile</a>
+          <a href="./dashboard.html" class="nav-link">Dashboard</a>
+          <a href="./about.html" class="nav-link">About</a>
+          <a href="./contact.html" class="nav-link">Contact</a>
+        </div>
+        
+        <div class="hidden md:flex items-center gap-3">
+          <button id="logout-btn" class="btn-ghost">Sign Out</button>
+          <a href="./book-appointment.html" class="btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="font-display text-4xl font-bold text-navy-900 mb-2">My Profile</h1>
+      <p class="text-xl text-slate-600">Manage your account and appointments</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Profile Card -->
+      <div class="lg:col-span-1">
+        <div class="card p-8">
+          <div class="text-center mb-6">
+            <div class="avatar avatar-xl bg-teal-100 text-teal-700 mx-auto mb-4" id="user-avatar">
+              U
+            </div>
+            <h2 class="font-display text-2xl font-bold text-navy-900 mb-1" id="user-name">Loading...</h2>
+            <p class="text-slate-600" id="user-email">Loading...</p>
+          </div>
+          
+          <div class="space-y-4 pt-6 border-t border-slate-200">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-600">Member Since</span>
+              <span class="text-sm font-semibold text-navy-900" id="member-since">--</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-600">Total Appointments</span>
+              <span class="text-sm font-semibold text-navy-900" id="total-appointments">0</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-600">Upcoming</span>
+              <span class="text-sm font-semibold text-teal-600" id="upcoming-count">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointments -->
+      <div class="lg:col-span-2">
+        <div class="card p-8">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-display text-2xl font-bold text-navy-900">My Appointments</h3>
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+            </span>
+          </div>
+
+          <div id="appointments-list" class="space-y-4">
+            <!-- Loading state -->
+            <div class="text-center py-12">
+              <div class="inline-flex w-12 h-12 items-center justify-center rounded-full bg-slate-100 mb-4">
+                <svg class="w-6 h-6 text-slate-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </div>
+              <p class="text-slate-600">Loading appointments...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from '../js/supabaseClient.js';
+    import { toast } from '../js/components/Toast.js';
+
+    let user = null;
+    let realtimeChannel = null;
+
+    async function loadProfile() {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) throw error;
+        
+        if (!session) {
+          window.location.href = './login.html';
+          return;
+        }
+
+        user = session.user;
+        
+        // Update profile UI
+        document.getElementById('user-email').textContent = user.email;
+        document.getElementById('user-name').textContent = user.email.split('@')[0];
+        document.getElementById('user-avatar').textContent = user.email[0].toUpperCase();
+        document.getElementById('member-since').textContent = new Date(user.created_at).toLocaleDateString();
+
+        // Load appointments
+        await loadAppointments();
+        
+        // Subscribe to real-time updates
+        subscribeToAppointments();
+      } catch (error) {
+        console.error('Profile load error:', error);
+        toast.error('Failed to load profile');
+      }
+    }
+
+    async function loadAppointments() {
+      try {
+        const { data, error } = await supabase
+          .from('appointments')
+          .select('*')
+          .eq('patient_email', user.email)
+          .order('created_at', { ascending: false })
+          .limit(10);
+        
+        if (error) throw error;
+
+        // Update counts
+        const upcoming = data.filter(a => a.status === 'scheduled' || a.status === 'confirmed').length;
+        document.getElementById('total-appointments').textContent = data.length;
+        document.getElementById('upcoming-count').textContent = upcoming;
+
+        // Display appointments
+        displayAppointments(data);
+      } catch (error) {
+        console.error('Failed to load appointments:', error);
+        displayAppointments([]);
+      }
+    }
+
+    function displayAppointments(appointments) {
+      const container = document.getElementById('appointments-list');
+      
+      if (appointments.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <div class="inline-flex w-16 h-16 items-center justify-center rounded-full bg-slate-100 mb-4">
+              <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <p class="text-slate-600 mb-4">No appointments yet</p>
+            <a href="./book-appointment.html" class="btn-primary">Book Your First Appointment</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appointments.map(apt => `
+        <div class="card p-6 hover:shadow-hover transition-all">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-3">
+                <h4 class="font-display text-lg font-bold text-navy-900">
+                  ${apt.department || 'General'}
+                </h4>
+                <span class="badge ${getStatusColor(apt.status)}">
+                  ${apt.status}
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p class="text-slate-500">Date & Time</p>
+                  <p class="font-semibold text-navy-900">
+                    ${new Date(apt.appointment_date).toLocaleDateString()} • ${apt.appointment_time}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-slate-500">Token Number</p>
+                  <p class="font-mono font-semibold text-teal-600">${apt.token_number}</p>
+                </div>
+              </div>
+            </div>
+            <a href="./queue-status.html?id=${apt.id}" class="btn-ghost ml-4">
+              View Status
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getStatusColor(status) {
+      const colors = {
+        scheduled: 'bg-blue-100 text-blue-700',
+        confirmed: 'bg-teal-100 text-teal-700',
+        completed: 'bg-green-100 text-green-700',
+        cancelled: 'bg-red-100 text-red-700',
+        no_show: 'bg-slate-100 text-slate-700'
+      };
+      return colors[status] || 'bg-slate-100 text-slate-700';
+    }
+
+    function subscribeToAppointments() {
+      realtimeChannel = supabase
+        .channel('profile_appointments')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'appointments',
+            filter: `patient_email=eq.${user.email}`
+          },
+          () => {
+            loadAppointments();
+          }
+        )
+        .subscribe();
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      try {
+        await supabase.auth.signOut();
+        window.location.href = './login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+      }
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

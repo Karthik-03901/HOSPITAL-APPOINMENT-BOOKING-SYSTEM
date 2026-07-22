@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Booking Direct</title>
+  <style>
+    body {
+      font-family: system-ui;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #0284c7;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+    .success {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+    }
+    .error {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Direct Booking Test</h1>
+    <p>This bypasses the booking form and tests Supabase directly.</p>
+    
+    <button onclick="testBooking()">Test Create Appointment</button>
+    
+    <div id="result"></div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './js/supabaseClient.js';
+    
+    window.testBooking = async function() {
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = '⏳ Testing...';
+      resultDiv.className = '';
+      
+      try {
+        // Generate random token
+        const token = 'TEST-' + Math.floor(Math.random() * 1000);
+        
+        // Get today's date and a time
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+        const timeStr = '10:30:00'; // HH:MM:SS
+        
+        console.log('📝 Creating appointment...');
+        console.log('Date:', dateStr);
+        console.log('Time:', timeStr);
+        console.log('Token:', token);
+        
+        // Test data
+        const appointmentData = {
+          appointment_date: dateStr,
+          appointment_time: timeStr,
+          token_number: token,
+          status: 'pending',
+          reason: 'Direct test booking'
+        };
+        
+        console.log('📋 Sending:', appointmentData);
+        
+        // Insert into Supabase
+        const { data, error } = await supabase
+          .from('appointments')
+          .insert([appointmentData])
+          .select()
+          .single();
+        
+        if (error) {
+          console.error('❌ Error:', error);
+          resultDiv.className = 'error';
+          resultDiv.textContent = '❌ ERROR:\n\n' + JSON.stringify(error, null, 2);
+          return;
+        }
+        
+        console.log('✅ Success:', data);
+        resultDiv.className = 'success';
+        resultDiv.textContent = '✅ SUCCESS!\n\nAppointment created:\n\n' + JSON.stringify(data, null, 2);
+        
+        // Check if queue position was created
+        setTimeout(async () => {
+          const { data: queueData } = await supabase
+            .from('queue_positions')
+            .select('*')
+            .eq('appointment_id', data.id)
+            .single();
+          
+          if (queueData) {
+            resultDiv.textContent += '\n\n✅ Queue position auto-created:\n\n' + JSON.stringify(queueData, null, 2);
+          }
+        }, 1000);
+        
+      } catch (err) {
+        console.error('❌ Exception:', err);
+        resultDiv.className = 'error';
+        resultDiv.textContent = '❌ EXCEPTION:\n\n' + err.message + '\n\n' + err.stack;
+      }
+    };
+  </script>
+</body>
+</html>

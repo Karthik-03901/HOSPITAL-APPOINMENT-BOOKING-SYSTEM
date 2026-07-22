@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No-Show Risk Dashboard — MediQueue Admin</title>
+  <link rel="stylesheet" href="../css/output.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
+  
+  <!-- Header -->
+  <header class="glass-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-11 w-11 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold text-lg">
+            M
+          </div>
+          <div>
+            <h1 class="font-display text-xl font-bold text-navy-900">No-Show Risk Dashboard</h1>
+            <p class="text-sm text-slate-600">Identify and prevent no-shows</p>
+          </div>
+        </div>
+        <a href="../index.html" class="btn-ghost">Back to Home</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <!-- High Risk -->
+      <div class="card p-6 border-l-4 border-red-500">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-slate-600">High Risk</span>
+          <span class="text-2xl">🔴</span>
+        </div>
+        <div class="text-3xl font-bold text-navy-900" id="high-risk-count">--</div>
+        <p class="text-sm text-slate-500 mt-1">Need extra reminders</p>
+      </div>
+
+      <!-- Medium Risk -->
+      <div class="card p-6 border-l-4 border-amber-500">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-slate-600">Medium Risk</span>
+          <span class="text-2xl">🟡</span>
+        </div>
+        <div class="text-3xl font-bold text-navy-900" id="medium-risk-count">--</div>
+        <p class="text-sm text-slate-500 mt-1">Monitor closely</p>
+      </div>
+
+      <!-- Low Risk -->
+      <div class="card p-6 border-l-4 border-green-500">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-slate-600">Low Risk</span>
+          <span class="text-2xl">🟢</span>
+        </div>
+        <div class="text-3xl font-bold text-navy-900" id="low-risk-count">--</div>
+        <p class="text-sm text-slate-500 mt-1">Reliable patients</p>
+      </div>
+
+      <!-- Prevention Rate -->
+      <div class="card p-6 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-semibold text-slate-600">Prevention Rate</span>
+          <span class="text-2xl">📊</span>
+        </div>
+        <div class="text-3xl font-bold text-navy-900" id="prevention-rate">--</div>
+        <p class="text-sm text-slate-500 mt-1">Extra reminders sent</p>
+      </div>
+    </div>
+
+    <!-- High Risk Appointments -->
+    <div class="card mb-8">
+      <div class="p-6 border-b border-slate-200">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold text-navy-900">⚠️ High Risk Appointments Today</h2>
+          <button onclick="refreshData()" class="btn-secondary text-sm">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <div id="high-risk-list" class="divide-y divide-slate-200">
+        <!-- Will be populated by JavaScript -->
+        <div class="p-8 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          Loading appointments...
+        </div>
+      </div>
+    </div>
+
+    <!-- Medium Risk Appointments -->
+    <div class="card">
+      <div class="p-6 border-b border-slate-200">
+        <h2 class="text-xl font-bold text-navy-900">⚡ Medium Risk Appointments Today</h2>
+      </div>
+      
+      <div id="medium-risk-list" class="divide-y divide-slate-200">
+        <div class="p-8 text-center text-slate-500">
+          <div class="animate-spin w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          Loading appointments...
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient Lookup -->
+    <div class="card mt-8">
+      <div class="p-6 border-b border-slate-200">
+        <h2 class="text-xl font-bold text-navy-900">🔍 Check Patient Reliability</h2>
+      </div>
+      
+      <div class="p-6">
+        <div class="flex gap-4 mb-6">
+          <input 
+            type="email" 
+            id="patient-email-input" 
+            placeholder="patient@example.com" 
+            class="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+          />
+          <button onclick="checkPatient()" class="btn-primary">
+            Check History
+          </button>
+        </div>
+        
+        <div id="patient-result" class="hidden">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { supabase } from '../js/supabaseClient.js';
+
+    // Load data on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadRiskData();
+    });
+
+    // Load risk appointments
+    async function loadRiskData() {
+      try {
+        const { data, error } = await supabase
+          .rpc('get_high_risk_appointments', {
+            p_date: new Date().toISOString().split('T')[0]
+          });
+
+        if (error) throw error;
+
+        // Count by risk level
+        const highRisk = data.filter(a => a.risk_level === 'HIGH');
+        const mediumRisk = data.filter(a => a.risk_level === 'MEDIUM');
+
+        // Update counts
+        document.getElementById('high-risk-count').textContent = highRisk.length;
+        document.getElementById('medium-risk-count').textContent = mediumRisk.length;
+
+        // Render lists
+        renderAppointments(highRisk, 'high-risk-list');
+        renderAppointments(mediumRisk, 'medium-risk-list');
+
+      } catch (error) {
+        console.error('Error loading risk data:', error);
+      }
+    }
+
+    // Render appointment cards
+    function renderAppointments(appointments, containerId) {
+      const container = document.getElementById(containerId);
+      
+      if (appointments.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center text-slate-500">
+            <svg class="w-12 h-12 mx-auto mb-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>No ${appointments.length === 0 ? 'high' : 'medium'} risk appointments today!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appointments.map(apt => `
+        <div class="p-6 hover:bg-slate-50 transition-colors">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <span class="font-mono font-bold text-lg text-navy-900">${apt.token_number}</span>
+                <span class="badge ${apt.risk_level === 'HIGH' ? 'badge-danger' : 'badge-warning'}">
+                  ${apt.risk_level} RISK (${apt.risk_score} pts)
+                </span>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4 mb-3">
+                <div>
+                  <p class="text-sm text-slate-600">Patient</p>
+                  <p class="font-semibold text-navy-900">${apt.patient_name}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-600">Department</p>
+                  <p class="font-semibold text-navy-900">${apt.department_name}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-600">Time</p>
+                  <p class="font-semibold text-navy-900">${formatTime(apt.appointment_time)}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-600">Email</p>
+                  <p class="text-sm text-slate-700">${apt.patient_email}</p>
+                </div>
+              </div>
+
+              <!-- Risk Factors -->
+              <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                <p class="text-xs font-semibold text-amber-900 mb-2">⚠️ Risk Factors:</p>
+                <ul class="text-xs text-amber-800 space-y-1">
+                  ${apt.risk_factors.map(f => `
+                    <li class="flex items-start gap-2">
+                      <span class="text-amber-600">•</span>
+                      <span><strong>${f.factor}:</strong> ${f.detail} (${f.weight} pts)</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              </div>
+            </div>
+
+            <div class="ml-4 flex flex-col gap-2">
+              <button onclick="sendReminder('${apt.id}')" class="btn-secondary text-sm">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                Send Reminder
+              </button>
+              <button onclick="viewPatientHistory('${apt.patient_email}')" class="btn-ghost text-sm">
+                View History
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Check patient reliability
+    window.checkPatient = async function() {
+      const email = document.getElementById('patient-email-input').value.trim();
+      if (!email) return;
+
+      const result = document.getElementById('patient-result');
+      result.classList.remove('hidden');
+      result.innerHTML = '<p class="text-center">Loading...</p>';
+
+      try {
+        const { data, error } = await supabase
+          .rpc('get_patient_reliability', { p_email: email });
+
+        if (error) throw error;
+
+        if (!data.found) {
+          result.innerHTML = `
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p class="text-blue-800">📋 New patient - no history found</p>
+            </div>
+          `;
+          return;
+        }
+
+        const ratingColors = {
+          'Excellent': 'green',
+          'Good': 'teal',
+          'Fair': 'amber',
+          'Poor': 'red'
+        };
+        const color = ratingColors[data.rating] || 'slate';
+
+        result.innerHTML = `
+          <div class="bg-${color}-50 border border-${color}-200 rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-${color}-900">Patient Reliability Report</h3>
+              <span class="badge badge-${color === 'red' ? 'danger' : color === 'amber' ? 'warning' : 'success'}">
+                ${data.rating}
+              </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p class="text-sm text-${color}-600">Reliability Score</p>
+                <p class="text-2xl font-bold text-${color}-900">${data.reliability_percentage}%</p>
+              </div>
+              <div>
+                <p class="text-sm text-${color}-600">Total Appointments</p>
+                <p class="text-2xl font-bold text-${color}-900">${data.total_appointments}</p>
+              </div>
+              <div>
+                <p class="text-sm text-${color}-600">Completed</p>
+                <p class="text-xl font-semibold text-green-600">${data.completed}</p>
+              </div>
+              <div>
+                <p class="text-sm text-${color}-600">No-Shows</p>
+                <p class="text-xl font-semibold text-red-600">${data.no_shows}</p>
+              </div>
+            </div>
+
+            ${data.no_shows > 0 ? `
+              <div class="bg-red-100 border border-red-300 rounded p-3">
+                <p class="text-sm text-red-800">
+                  ⚠️ Last no-show: ${data.last_no_show || 'N/A'}
+                </p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+      } catch (error) {
+        console.error(error);
+        result.innerHTML = `<p class="text-red-600">Error loading patient data</p>`;
+      }
+    };
+
+    // Send reminder (placeholder)
+    window.sendReminder = function(appointmentId) {
+      alert(`Reminder sent for appointment: ${appointmentId}\n\nIn production, this would trigger:\n- Email reminder\n- SMS reminder\n- Push notification`);
+    };
+
+    // View patient history
+    window.viewPatientHistory = function(email) {
+      document.getElementById('patient-email-input').value = email;
+      window.checkPatient();
+      document.getElementById('patient-result').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Refresh data
+    window.refreshData = function() {
+      loadRiskData();
+    };
+
+    // Format time helper
+    function formatTime(time) {
+      if (!time) return 'N/A';
+      const [h, m] = time.split(':');
+      const hour = parseInt(h);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      return `${hour12}:${m} ${ampm}`;
+    }
+  </script>
+</body>
+</html>

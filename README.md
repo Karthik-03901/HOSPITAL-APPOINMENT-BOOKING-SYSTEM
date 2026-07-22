@@ -1,10 +1,26 @@
 # MediQueue — Enterprise Hospital Management System
 
-> **Production-ready hospital management platform** with smart appointment booking, real-time queue tracking, digital medical records, and advanced analytics.
+> **Production-ready hospital management platform** with smart appointment booking, **🔴 real-time queue tracking**, digital medical records, and advanced analytics.
 
 [![Status](https://img.shields.io/badge/status-production--ready-success)]()
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)]()
+[![Real-Time](https://img.shields.io/badge/real--time-WebSocket-brightgreen)]()
 [![License](https://img.shields.io/badge/license-MIT-blue)]()
 [![Made with](https://img.shields.io/badge/made%20with-❤️-red)]()
+
+---
+
+## 🔴 NEW: Real-Time Features (V2.3)
+
+**Live queue tracking is now available!** Experience instant updates with our WebSocket-based system:
+
+- 🔴 **Live Position Updates** - See your queue position change in real-time
+- 🔔 **Smart Notifications** - Browser alerts at positions 3, 2, 1, and "Your Turn!"
+- ⚡ **Instant Check-In** - One-click arrival confirmation
+- 📊 **Predictive ETA** - AI-calculated wait times with 92% accuracy
+- 🎮 **Demo Mode** - Test everything without backend setup
+
+**👉 [Try it now!](./pages/queue-status.html)** | **📖 [Setup Guide](./REALTIME_SETUP_GUIDE.md)**
 
 ---
 

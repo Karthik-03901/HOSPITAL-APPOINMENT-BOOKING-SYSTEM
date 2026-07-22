@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enable Two-Factor Authentication - MediQueue</title>
+  <link rel="stylesheet" href="../css/output.css">
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen flex items-center justify-center p-4">
+  
+  <!-- TOTP Setup Container -->
+  <div class="max-w-2xl w-full">
+    
+    <!-- Step 1: Introduction -->
+    <div id="step-intro" class="card animate-fade-in">
+      <div class="text-center mb-6">
+        <div class="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <h1 class="text-3xl font-bold text-slate-800 mb-2">Enable Two-Factor Authentication</h1>
+        <p class="text-slate-600">Add an extra layer of security to your admin account</p>
+      </div>
+
+      <div class="space-y-4 mb-6">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">1</div>
+          <div>
+            <h3 class="font-semibold">Install Authenticator App</h3>
+            <p class="text-sm text-slate-600">Download Google Authenticator, Authy, or Microsoft Authenticator on your phone</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">2</div>
+          <div>
+            <h3 class="font-semibold">Scan QR Code</h3>
+            <p class="text-sm text-slate-600">Use your app to scan the QR code we'll show you</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">3</div>
+          <div>
+            <h3 class="font-semibold">Enter Verification Code</h3>
+            <p class="text-sm text-slate-600">Enter the 6-digit code from your app to complete setup</p>
+          </div>
+        </div>
+      </div>
+
+      <button id="btn-start-setup" class="btn-primary w-full py-3">
+        Start Setup
+      </button>
+    </div>
+
+    <!-- Step 2: QR Code Display -->
+    <div id="step-qrcode" class="card hidden animate-fade-in">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">Scan QR Code</h2>
+        <p class="text-slate-600">Open your authenticator app and scan this code</p>
+      </div>
+
+      <!-- QR Code -->
+      <div id="qr-code-container" class="flex justify-center mb-6">
+        <div class="border-4 border-teal-500 rounded-lg p-4 bg-white">
+          <div id="qr-code-loading" class="w-64 h-64 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual Entry Option -->
+      <div class="bg-slate-100 rounded-lg p-4 mb-6">
+        <button id="toggle-manual-entry" class="text-sm text-teal-600 hover:text-teal-700 font-medium mb-2">
+          Can't scan? Enter code manually
+        </button>
+        <div id="manual-entry-container" class="hidden">
+          <p class="text-sm text-slate-600 mb-2">Enter this code in your authenticator app:</p>
+          <div class="flex items-center gap-2">
+            <code id="manual-secret" class="flex-1 bg-white px-4 py-3 rounded font-mono text-sm"></code>
+            <button id="copy-secret" class="btn-secondary btn-sm">
+              Copy
+            </button>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">
+            Account: <span id="user-email"></span> | Type: Time-based | Algorithm: SHA-1 | Digits: 6
+          </p>
+        </div>
+      </div>
+
+      <button id="btn-next-verify" class="btn-primary w-full py-3">
+        Next: Verify Code
+      </button>
+    </div>
+
+    <!-- Step 3: Verify Code -->
+    <div id="step-verify" class="card hidden animate-fade-in">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">Enter Verification Code</h2>
+        <p class="text-slate-600">Enter the 6-digit code from your authenticator app</p>
+      </div>
+
+      <form id="verify-form" class="space-y-4 mb-6">
+        <div>
+          <input 
+            type="text" 
+            id="verify-code-input" 
+            placeholder="000000"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            class="w-full text-center text-3xl font-mono tracking-widest px-4 py-4 border-2 border-slate-300 rounded-xl focus:border-teal-500 focus:ring-4 focus:ring-teal-200 transition-all"
+            required
+            autocomplete="off"
+          />
+          <p class="text-xs text-slate-500 mt-2 text-center">Enter 6-digit code (numbers only)</p>
+        </div>
+
+        <button type="submit" class="btn-primary w-full py-3">
+          Verify & Complete Setup
+        </button>
+      </form>
+
+      <button id="btn-back-qrcode" class="btn-secondary w-full py-2">
+        Back to QR Code
+      </button>
+    </div>
+
+    <!-- Step 4: Backup Codes -->
+    <div id="step-backup-codes" class="card hidden animate-fade-in">
+      <div class="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6 mb-6">
+        <div class="flex items-start gap-3 mb-4">
+          <svg class="w-6 h-6 text-yellow-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <h3 class="text-lg font-bold text-yellow-800 mb-1">Save Your Backup Codes</h3>
+            <p class="text-sm text-yellow-700">
+              Store these codes in a safe place. Each can be used once if you lose access to your authenticator app.
+            </p>
+          </div>
+        </div>
+
+        <div id="backup-codes-grid" class="grid grid-cols-2 gap-2 mb-4">
+          <!-- Backup codes will be inserted here -->
+        </div>
+
+        <div class="flex gap-2">
+          <button id="download-codes" class="btn-primary flex-1">
+            📥 Download Codes
+          </button>
+          <button id="print-codes" class="btn-secondary flex-1">
+            🖨️ Print Codes
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 mb-4">
+        <input type="checkbox" id="codes-saved-checkbox" class="w-5 h-5 text-teal-600 rounded">
+        <label for="codes-saved-checkbox" class="text-sm text-slate-700">
+          I have saved my backup codes in a secure location
+        </label>
+      </div>
+
+      <button id="btn-finish-setup" class="btn-primary w-full py-3" disabled>
+        Finish & Go to Dashboard
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+  <script type="module">
+    import { totpManager } from '../js/auth/totp.js';
+    import { supabase } from '../js/supabase-client.js';
+    import { toast } from '../js/components/Toast.js';
+
+    let userEmail = '';
+    let userId = '';
+    let secret = '';
+    let backupCodes = [];
+
+    // Check if user is logged in
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+      userEmail = user.email;
+      userId = user.id;
+      document.getElementById('user-email').textContent = userEmail;
+    }
+
+    // Step 1: Start Setup
+    document.getElementById('btn-start-setup').addEventListener('click', async () => {
+      document.getElementById('step-intro').classList.add('hidden');
+      document.getElementById('step-qrcode').classList.remove('hidden');
+      
+      await generateQRCode();
+    });
+
+    // Generate QR Code
+    async function generateQRCode() {
+      try {
+        secret = totpManager.generateSecret();
+        const { qrCodeDataURL } = await totpManager.generateQRCode(userEmail);
+        
+        const qrContainer = document.getElementById('qr-code-loading');
+        qrContainer.innerHTML = `<img src="${qrCodeDataURL}" alt="TOTP QR Code" class="w-64 h-64" />`;
+        
+        document.getElementById('manual-secret').textContent = secret;
+      } catch (error) {
+        toast.error('Failed to generate QR code');
+        console.error(error);
+      }
+    }
+
+    // Toggle Manual Entry
+    document.getElementById('toggle-manual-entry').addEventListener('click', () => {
+      const container = document.getElementById('manual-entry-container');
+      container.classList.toggle('hidden');
+    });
+
+    // Copy Secret
+    document.getElementById('copy-secret').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(secret);
+      toast.success('Secret copied to clipboard');
+    });
+
+    // Step 2: Next to Verify
+    document.getElementById('btn-next-verify').addEventListener('click', () => {
+      document.getElementById('step-qrcode').classList.add('hidden');
+      document.getElementById('step-verify').classList.remove('hidden');
+      document.getElementById('verify-code-input').focus();
+    });
+
+    // Step 3: Back to QR Code
+    document.getElementById('btn-back-qrcode').addEventListener('click', () => {
+      document.getElementById('step-verify').classList.add('hidden');
+      document.getElementById('step-qrcode').classList.remove('hidden');
+    });
+
+    // Verify Code
+    document.getElementById('verify-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const code = document.getElementById('verify-code-input').value.trim();
+      
+      if (code.length !== 6) {
+        toast.error('Please enter a 6-digit code');
+        return;
+      }
+
+      // Verify the code
+      const isValid = totpManager.verifyToken(code, secret);
+      
+      if (!isValid) {
+        toast.error('Invalid code. Please try again.');
+        document.getElementById('verify-code-input').value = '';
+        return;
+      }
+
+      // Generate backup codes
+      backupCodes = totpManager.generateBackupCodes();
+
+      // Save TOTP settings
+      const result = await totpManager.saveTOTPSettings(userId, secret, backupCodes);
+      
+      if (!result.success) {
+        toast.error('Failed to save 2FA settings');
+        return;
+      }
+
+      toast.success('2FA verified successfully!');
+      
+      // Show backup codes
+      document.getElementById('step-verify').classList.add('hidden');
+      document.getElementById('step-backup-codes').classList.remove('hidden');
+      
+      displayBackupCodes();
+    });
+
+    // Display Backup Codes
+    function displayBackupCodes() {
+      const grid = document.getElementById('backup-codes-grid');
+      grid.innerHTML = backupCodes.map(code => `
+        <code class="bg-white px-3 py-2 rounded font-mono text-sm text-center border border-yellow-300">${code}</code>
+      `).join('');
+    }
+
+    // Download Codes
+    document.getElementById('download-codes').addEventListener('click', () => {
+      const content = `MediQueue 2FA Backup Codes\nGenerated: ${new Date().toLocaleString()}\n\n${backupCodes.join('\n')}\n\nKeep these codes safe and secure.\nEach code can only be used once.`;
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mediqueue-backup-codes.txt';
+      a.click();
+      toast.success('Backup codes downloaded');
+    });
+
+    // Print Codes
+    document.getElementById('print-codes').addEventListener('click', () => {
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html>
+          <head><title>MediQueue Backup Codes</title></head>
+          <body style="font-family: monospace; padding: 20px;">
+            <h2>MediQueue 2FA Backup Codes</h2>
+            <p>Generated: ${new Date().toLocaleString()}</p>
+            <ul style="list-style: none; padding: 0;">
+              ${backupCodes.map(code => `<li style="padding: 5px 0;">${code}</li>`).join('')}
+            </ul>
+            <p style="margin-top: 20px; font-size: 12px;">Keep these codes safe and secure. Each code can only be used once.</p>
+          </body>
+        </html>
+      `);
+      printWindow.print();
+      toast.success('Backup codes sent to printer');
+    });
+
+    // Codes Saved Checkbox
+    document.getElementById('codes-saved-checkbox').addEventListener('change', (e) => {
+      document.getElementById('btn-finish-setup').disabled = !e.target.checked;
+    });
+
+    // Finish Setup
+    document.getElementById('btn-finish-setup').addEventListener('click', () => {
+      toast.success('2FA setup complete! 🎉');
+      setTimeout(() => {
+        window.location.href = '/pages/admin-dashboard.html';
+      }, 1000);
+    });
+
+    // Initialize
+    checkAuth();
+  </script>
+</body>
+</html>

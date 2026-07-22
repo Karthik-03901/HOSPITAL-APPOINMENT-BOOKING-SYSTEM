@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clear Sessions - MediQueue</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 0;
+    }
+    button:hover {
+      background: #059669;
+    }
+    .danger {
+      background: #ef4444;
+    }
+    .danger:hover {
+      background: #dc2626;
+    }
+    pre {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    .success {
+      color: #10b981;
+      font-weight: bold;
+    }
+    .error {
+      color: #ef4444;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔧 Clear Sessions & Debug</h1>
+    <p>Use this page to clear all stored sessions and debug login issues.</p>
+    
+    <h3>Current Sessions:</h3>
+    <div id="current-sessions"></div>
+    
+    <button onclick="showSessions()">📋 Show All Sessions</button>
+    <button onclick="clearAllSessions()" class="danger">🗑️ Clear All Sessions</button>
+    <button onclick="testLogin()">🧪 Test Login Flow</button>
+    <button onclick="goToLogin()">🔐 Go to Login Page</button>
+    
+    <h3>Log:</h3>
+    <pre id="log"></pre>
+  </div>
+
+  <script>
+    const log = document.getElementById('log');
+    const sessionsDiv = document.getElementById('current-sessions');
+    
+    function addLog(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+      log.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+      log.scrollTop = log.scrollHeight;
+    }
+    
+    function showSessions() {
+      addLog('Checking stored sessions...');
+      
+      const mediqueue = localStorage.getItem('mediqueue_session');
+      const mediqueueSession = sessionStorage.getItem('mediqueue_session');
+      const demo = localStorage.getItem('mediqueue_demo_session');
+      
+      let html = '<pre style="background: #f9fafb; padding: 15px; border-radius: 5px;">';
+      
+      if (mediqueue) {
+        html += '<strong>localStorage.mediqueue_session:</strong>\n';
+        html += JSON.stringify(JSON.parse(mediqueue), null, 2) + '\n\n';
+        addLog('Found mediqueue_session in localStorage', 'info');
+      } else {
+        html += '<span style="color: #999;">No mediqueue_session in localStorage</span>\n\n';
+      }
+      
+      if (mediqueueSession) {
+        html += '<strong>sessionStorage.mediqueue_session:</strong>\n';
+        html += JSON.stringify(JSON.parse(mediqueueSession), null, 2) + '\n\n';
+        addLog('Found mediqueue_session in sessionStorage', 'info');
+      } else {
+        html += '<span style="color: #999;">No mediqueue_session in sessionStorage</span>\n\n';
+      }
+      
+      if (demo) {
+        html += '<strong>localStorage.mediqueue_demo_session:</strong>\n';
+        html += JSON.stringify(JSON.parse(demo), null, 2) + '\n\n';
+        addLog('Found mediqueue_demo_session in localStorage', 'info');
+      } else {
+        html += '<span style="color: #999;">No mediqueue_demo_session in localStorage</span>\n\n';
+      }
+      
+      html += '</pre>';
+      sessionsDiv.innerHTML = html;
+      
+      if (!mediqueue && !mediqueueSession && !demo) {
+        addLog('No sessions found - all clear! ✅', 'success');
+      }
+    }
+    
+    function clearAllSessions() {
+      addLog('Clearing all sessions...');
+      
+      localStorage.removeItem('mediqueue_session');
+      sessionStorage.removeItem('mediqueue_session');
+      localStorage.removeItem('mediqueue_demo_session');
+      
+      // Also clear any Supabase sessions
+      localStorage.removeItem('sb-cgohfhvokszbolsafpxu-auth-token');
+      
+      addLog('✅ All sessions cleared!', 'success');
+      addLog('You can now test fresh login', 'success');
+      
+      showSessions();
+    }
+    
+    function testLogin() {
+      addLog('Testing login flow...');
+      addLog('Admin email: karthiksaravanavel18@gmail.com');
+      addLog('Doctor email: vel759894@gmail.com');
+      addLog('Any other email: Goes to home page');
+      addLog('Password for admin/doctor: 123456');
+      addLog('Password for others: anything works');
+    }
+    
+    function goToLogin() {
+      addLog('Redirecting to login page...');
+      setTimeout(() => {
+        window.location.href = './pages/login.html';
+      }, 500);
+    }
+    
+    // Auto-show sessions on load
+    showSessions();
+    addLog('Session debugger loaded', 'success');
+  </script>
+</body>
+</html>

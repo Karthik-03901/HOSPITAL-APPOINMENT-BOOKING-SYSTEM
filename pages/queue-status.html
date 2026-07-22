@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Queue Status — MediQueue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/output.css" />
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/30 to-blue-50/20 font-body antialiased">
+  
+  <!-- Header -->
+  <header id="navbar" class="glass-white border-b border-slate-200/50 sticky top-0 z-50 transition-transform duration-300">
+    <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <a href="../index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+          <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 font-display text-lg font-bold text-white shadow-soft">M</div>
+          <span class="font-display text-xl font-bold text-navy-900">MediQueue</span>
+        </a>
+        <a href="./dashboard-patient.html" class="btn-secondary">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <!-- Live Indicator -->
+    <div class="flex items-center justify-center gap-2 mb-8">
+      <span class="relative flex h-3 w-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+      </span>
+      <span class="text-sm font-semibold text-teal-600">LIVE</span>
+    </div>
+
+    <!-- Queue Position Card -->
+    <div class="card-glass p-12 text-center mb-8 relative overflow-hidden">
+      <!-- Animated Background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-blue-500/5"></div>
+      
+      <div class="relative z-10">
+        <h1 class="font-display text-2xl font-bold text-navy-900 mb-8">Your Queue Position</h1>
+        
+        <!-- Position Number -->
+        <div class="mb-6">
+          <div id="position-display" class="text-8xl font-bold text-teal-600 mb-2 font-mono animate-pulse">
+            --
+          </div>
+          <p class="text-slate-600 text-lg" id="position-text">Connecting...</p>
+        </div>
+
+        <!-- Estimated Time -->
+        <div class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-blue-50 border border-blue-200">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p class="text-xs text-blue-600 font-semibold uppercase">Estimated Wait Time</p>
+            <p class="text-lg font-bold text-blue-700" id="eta-display">-- min</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doctor Info -->
+    <div class="card p-6 mb-8">
+      <h3 class="font-display text-lg font-bold text-navy-900 mb-4">Appointment Details</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Token Number</span>
+          <span class="font-mono font-bold text-navy-900" id="token-display">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Doctor</span>
+          <span class="font-semibold text-navy-900" id="doctor-display">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Department</span>
+          <span class="font-semibold text-navy-900" id="department-display">---</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-slate-600">Time</span>
+          <span class="font-semibold text-navy-900" id="time-display">---</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check-In Button -->
+    <div id="checkin-section" class="card p-6 mb-8 border-2 border-teal-200 bg-teal-50/50">
+      <div class="flex items-start gap-4">
+        <svg class="w-6 h-6 text-teal-600 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div class="flex-1">
+          <h4 class="font-semibold text-teal-900 mb-2">Have you arrived at the hospital?</h4>
+          <p class="text-sm text-teal-700 mb-4">Check in to let the doctor know you're ready</p>
+          <button onclick="checkIn()" id="checkin-btn" class="btn-primary">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Check In Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Notes -->
+    <div class="card p-6 bg-amber-50 border border-amber-200">
+      <h4 class="font-semibold text-amber-900 mb-3 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        Important Notes
+      </h4>
+      <ul class="text-sm text-amber-800 space-y-2">
+        <li class="flex items-start gap-2">
+          <span class="text-amber-600">•</span>
+          <span>Please arrive 15 minutes before your scheduled time</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-600">•</span>
+          <span>Keep this page open for real-time updates</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-600">•</span>
+          <span>You'll receive a notification when it's your turn</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="module" src="../js/pages/queue-status.js"></script>
+</body>
+</html>
