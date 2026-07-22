@@ -3,10 +3,12 @@
  * Uses otplib for TOTP generation/verification and qrcode for QR code display
  */
 
-import { authenticator } from 'https://esm.sh/otplib@12.0.1';
+import * as OTPAuth from 'https://esm.sh/otplib@12.0.1';
 import QRCode from 'https://esm.sh/qrcode@1.5.3';
 import { supabase } from '../supabaseClient.js';
 import { toast } from '../components/Toast.js';
+
+const authenticator = OTPAuth.authenticator;
 
 class TOTPManager {
   constructor() {
