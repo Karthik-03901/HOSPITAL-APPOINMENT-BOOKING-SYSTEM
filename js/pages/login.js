@@ -131,8 +131,9 @@ async function handleLogin(e) {
     // Check authentication result
     if (user === null) {
       // null means TOTP setup/verification is in progress
-      // This is NOT an error - just stop the login flow here
-      console.log('⏸️ Login paused for TOTP setup/verification');
+      // Keep button disabled and loading state while redirecting
+      console.log('⏸️ Login paused for TOTP setup/verification - redirecting...');
+      // Don't reset button - let the redirect happen
       return;
     }
     
