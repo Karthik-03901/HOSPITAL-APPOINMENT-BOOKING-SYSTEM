@@ -272,10 +272,13 @@ async function authenticateUser(email, password) {
         // Store user data temporarily
         sessionStorage.setItem('totp_setup_user', JSON.stringify(user));
         
+        console.log('⏰ Setting redirect timer for 1.5 seconds...');
         setTimeout(() => {
+          console.log('🚀 Redirecting to TOTP setup now!');
           window.location.href = './totp-setup.html';
         }, 1500);
         
+        console.log('↩️ Returning null to pause login flow');
         return null; // Block login until TOTP setup
       }
       
