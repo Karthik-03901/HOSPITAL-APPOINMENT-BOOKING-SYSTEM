@@ -128,8 +128,16 @@ async function handleLogin(e) {
     // Use secure login with brute force protection
     const user = await secureLogin(email, password, authenticateUser);
     
-    if (!user) {
-      // Authentication failed (only for special users with wrong password)
+    // Check authentication result
+    if (user === null) {
+      // null means TOTP setup/verification is in progress
+      // This is NOT an error - just stop the login flow here
+      console.log('⏸️ Login paused for TOTP setup/verification');
+      return;
+    }
+    
+    if (user === false || !user) {
+      // false or undefined means authentication actually failed
       throw new Error('Invalid email or password');
     }
     
