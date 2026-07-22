@@ -232,65 +232,42 @@ async function authenticateUser(email, password) {
         id: generateUserId(normalizedEmail)
       };
       
-      // TOTP Check for Admin Users
+      // TOTP Check for Admin Users - ALWAYS REQUIRED
       if (demoUser.role === 'admin') {
-        console.log('🔐 Admin detected - checking TOTP status...');
+        console.log('🔐 Admin detected - TOTP authentication required');
         
         try {
+          // Try to check TOTP status from database
           const totpStatus = await totpManager.checkTOTPStatus(user.id);
-          console.log('TOTP Status:', totpStatus);
+          console.log('TOTP Status from database:', totpStatus);
           
-          if (totpStatus.required) {
-            if (totpStatus.reason === 'not_setup' || totpStatus.reason === 'inactive_15_days') {
-              // First time setup or inactive - redirect to setup
-              console.log('📱 TOTP setup required:', totpStatus.reason);
-              toast.info('Please set up Two-Factor Authentication');
-              
-              // Store user data temporarily
-              sessionStorage.setItem('totp_setup_user', JSON.stringify(user));
-              
-              setTimeout(() => {
-                window.location.href = './totp-setup.html';
-              }, 1500);
-              
-              return null; // Block login until TOTP setup
-            } else {
-              // TOTP enabled - show verification modal
-              console.log('🔑 TOTP verification required');
-              
-              return new Promise((resolve) => {
-                totpLogin.show(user.id, user.email, () => {
-                  console.log('✅ TOTP verified successfully');
-                  resolve(user);
-                });
+          // If TOTP is enabled in database, verify it
+          if (totpStatus && totpStatus.totp_enabled) {
+            console.log('🔑 TOTP enabled - showing verification modal');
+            
+            return new Promise((resolve) => {
+              totpLogin.show(user.id, user.email, () => {
+                console.log('✅ TOTP verified successfully');
+                resolve(user);
               });
-            }
-          } else {
-            // Trusted device - skip TOTP
-            console.log('✅ Trusted device - TOTP skipped');
-            return user;
+            });
           }
         } catch (error) {
-          console.error('TOTP check error:', error);
-          
-          // Check if it's a server connection error or database error
-          if (error.message && error.message.includes('Failed to fetch')) {
-            toast.error('TOTP server not running. Please start it with: npm run totp-server');
-            // Block login if server is not running
-            return null;
-          }
-          
-          // For database or other errors, allow first-time setup
-          console.warn('TOTP status check failed, redirecting to setup');
-          toast.info('Setting up Two-Factor Authentication...');
-          
-          sessionStorage.setItem('totp_setup_user', JSON.stringify(user));
-          setTimeout(() => {
-            window.location.href = './totp-setup.html';
-          }, 1500);
-          
-          return null;
+          console.warn('Could not check TOTP status from database:', error);
         }
+        
+        // If no TOTP in database or error, require setup
+        console.log('📱 TOTP not configured - redirecting to setup');
+        toast.info('Two-Factor Authentication setup required for admin access');
+        
+        // Store user data temporarily
+        sessionStorage.setItem('totp_setup_user', JSON.stringify(user));
+        
+        setTimeout(() => {
+          window.location.href = './totp-setup.html';
+        }, 1500);
+        
+        return null; // Block login until TOTP setup
       }
       
       return user;
