@@ -5,7 +5,7 @@
 
 import { authenticator } from 'https://esm.sh/otplib@12.0.1';
 import QRCode from 'https://esm.sh/qrcode@1.5.3';
-import { supabase } from '../supabase-client.js';
+import { supabase } from '../supabaseClient.js';
 import { toast } from '../components/Toast.js';
 
 class TOTPManager {
