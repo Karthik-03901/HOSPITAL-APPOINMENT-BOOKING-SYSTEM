@@ -272,9 +272,24 @@ async function authenticateUser(email, password) {
           }
         } catch (error) {
           console.error('TOTP check error:', error);
-          toast.error('TOTP server not running. Start it with: npm run totp-server');
-          // Allow login anyway for development
-          return user;
+          
+          // Check if it's a server connection error or database error
+          if (error.message && error.message.includes('Failed to fetch')) {
+            toast.error('TOTP server not running. Please start it with: npm run totp-server');
+            // Block login if server is not running
+            return null;
+          }
+          
+          // For database or other errors, allow first-time setup
+          console.warn('TOTP status check failed, redirecting to setup');
+          toast.info('Setting up Two-Factor Authentication...');
+          
+          sessionStorage.setItem('totp_setup_user', JSON.stringify(user));
+          setTimeout(() => {
+            window.location.href = './totp-setup.html';
+          }, 1500);
+          
+          return null;
         }
       }
       
