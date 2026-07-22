@@ -3,7 +3,7 @@
  * Handles 2FA verification during login
  */
 
-import { totpManager } from './totp.js';
+import { totpManager } from './totp-api-client.js';
 import { toast } from '../components/Toast.js';
 
 class TOTPLogin {

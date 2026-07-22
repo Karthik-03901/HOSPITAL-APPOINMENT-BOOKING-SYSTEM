@@ -6,10 +6,14 @@
     "build": "node build.js",
     "build:css": "tailwindcss -i ./css/input.css -o ./css/output.css --minify",
     "watch:css": "tailwindcss -i ./css/input.css -o ./css/output.css --watch",
-    "dev": "concurrently \"npm run watch:css\" \"npx serve .\""
+    "dev": "concurrently \"npm run watch:css\" \"npx serve .\"",
+    "totp-server": "node totp-server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
+    "body-parser": "^2.3.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "otplib": "^13.4.1",
     "qrcode": "^1.5.4"
   },

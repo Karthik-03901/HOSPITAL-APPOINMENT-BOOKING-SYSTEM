@@ -7,9 +7,8 @@
 import { supabase } from '../supabaseClient.js';
 import { toast } from '../components/Toast.js';
 import { secureLogin, clearSecurityMessages } from '../security.js';
-// TOTP temporarily disabled due to module import issues
-// import { totpManager } from '../auth/totp.js';
-// import { totpLogin } from '../auth/totp-login.js';
+import { totpManager } from '../auth/totp-api-client.js';
+import { totpLogin } from '../auth/totp-login.js';
 
 // Demo users (for development - remove in production)
 const DEMO_USERS = {
@@ -235,10 +234,8 @@ async function authenticateUser(email, password) {
       
       // TOTP Check for Admin Users
       if (demoUser.role === 'admin') {
-        console.log('🔐 Admin detected - TOTP temporarily disabled');
+        console.log('🔐 Admin detected - checking TOTP status...');
         
-        // TODO: Re-enable TOTP after fixing module import issues
-        /*
         try {
           const totpStatus = await totpManager.checkTOTPStatus(user.id);
           console.log('TOTP Status:', totpStatus);
@@ -275,10 +272,10 @@ async function authenticateUser(email, password) {
           }
         } catch (error) {
           console.error('TOTP check error:', error);
-          toast.error('Authentication error. Please try again.');
-          return null;
+          toast.error('TOTP server not running. Start it with: npm run totp-server');
+          // Allow login anyway for development
+          return user;
         }
-        */
       }
       
       return user;
