@@ -266,20 +266,20 @@ async function authenticateUser(email, password) {
         }
         
         // If no TOTP in database or error, require setup
-        console.log('📱 TOTP not configured - redirecting to setup');
-        toast.info('Two-Factor Authentication setup required for admin access');
+        console.log('📱 TOTP not configured - IMMEDIATE redirect to setup');
         
         // Store user data temporarily
         sessionStorage.setItem('totp_setup_user', JSON.stringify(user));
         
-        console.log('⏰ Setting redirect timer for 1.5 seconds...');
-        setTimeout(() => {
-          console.log('🚀 Redirecting to TOTP setup now!');
-          window.location.href = './totp-setup.html';
-        }, 1500);
+        // Show toast message
+        toast.info('Two-Factor Authentication setup required for admin access', 2000);
         
-        console.log('↩️ Returning null to pause login flow');
-        return null; // Block login until TOTP setup
+        // Redirect immediately (don't use setTimeout)
+        console.log('🚀 Redirecting to TOTP setup NOW!');
+        window.location.href = './totp-setup.html';
+        
+        // Return null to indicate TOTP is pending
+        return null;
       }
       
       return user;
