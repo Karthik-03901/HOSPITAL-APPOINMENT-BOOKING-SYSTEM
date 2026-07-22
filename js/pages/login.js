@@ -299,9 +299,18 @@ async function authenticateUser(email, password) {
 
 /**
  * Generate user ID from email (for demo)
+ * Creates a UUID v4 based on email hash
  */
 function generateUserId(email) {
-  return 'user_' + btoa(email).replace(/=/g, '').substring(0, 10);
+  // Create a deterministic UUID from email
+  // For demo purposes - in production, use actual database UUIDs
+  const hash = email.split('').reduce((acc, char) => {
+    return ((acc << 5) - acc) + char.charCodeAt(0);
+  }, 0);
+  
+  // Generate a UUID v4 format from hash
+  const hex = Math.abs(hash).toString(16).padStart(32, '0');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
 }
 
 /**
