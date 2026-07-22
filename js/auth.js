@@ -67,8 +67,10 @@ export async function signIn({ email, password }) {
 }
 
 export async function signOut() {
-  // Clear demo session
+  // Clear all session data
   localStorage.removeItem('mediqueue_demo_session');
+  localStorage.removeItem('mediqueue_session');
+  sessionStorage.removeItem('mediqueue_session');
   
   // Sign out from Supabase
   const { error } = await supabase.auth.signOut();

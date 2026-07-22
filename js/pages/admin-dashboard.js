@@ -120,7 +120,7 @@ function setupLogout() {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       await signOut();
-      window.location.href = '../index.html';
+      window.location.href = './login.html';
     });
   }
 }
